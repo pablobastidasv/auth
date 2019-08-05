@@ -66,7 +66,8 @@ class JwtUtilsTest {
         // Then
         testStringClaim(claimsSet, expectedUsername, Claims.sub.name());
         testStringClaim(claimsSet, expectedUsername, Claims.upn.name());
-        testLongClaim(claimsSet, expectedId, "user_id");
+        testLongClaim(claimsSet, expectedId, JwtUtils.USER_ID_CLAIM);
+        assertNotNull(claimsSet.getJWTID());
         assertNotNull(claimsSet.getIssuer());
 
         Set<String> groupsFromClaim = (Set<String>) claimsSet.getClaim(Claims.groups.name());

@@ -25,6 +25,8 @@ public class JwtUtils {
 
     private static final String DEFAULT_ISSUER = "localhost";
 
+    public static final String USER_ID_CLAIM = "user_id";
+
     @Inject
     Clock clock;
 
@@ -51,8 +53,8 @@ public class JwtUtils {
         Set<String> group = user.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
 
         return new JWTClaimsSet.Builder()
-            .claim("user_id", user.getId())
-//            .claim(Claims.jti.name(), UUID.randomUUID()) // TODO: Add JTI
+            .claim(USER_ID_CLAIM, user.getId())
+            .claim(Claims.jti.name(), UUID.randomUUID().toString())
             .claim(Claims.upn.name(), user.getUsername())
             .claim(Claims.sub.name(), user.getUsername())
             .claim(Claims.iss.name(), iss)
