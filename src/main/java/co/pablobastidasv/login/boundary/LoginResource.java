@@ -1,11 +1,9 @@
 package co.pablobastidasv.login.boundary;
 
-import co.pablobastidasv.login.control.JwtFiller;
 import co.pablobastidasv.login.control.PasswordTools;
 import co.pablobastidasv.login.entity.LoginContent;
 import co.pablobastidasv.user.boundary.UserManager;
 import co.pablobastidasv.user.entity.User;
-import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -44,7 +42,7 @@ public class LoginResource {
     @POST
     @PermitAll
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response login(@FormParam("username") String username, @FormParam("password") String password) throws Exception {
+    public Response login(@FormParam("username") String username, @FormParam("password") String password) {
         Optional<User> userOpt = userManager.findByUserAndTenant(username, tenantId);
 
         if(userOpt.isPresent()){

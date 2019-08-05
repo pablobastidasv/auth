@@ -2,18 +2,18 @@ package co.pablobastidasv.login.boundary;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 import static io.restassured.RestAssured.given;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
 @QuarkusTest
-class LoginResourceIT {
+class AuthenticationResourcesIT {
 
     private static final String username = "username";
     private static final String usernameNoRol = "user";
@@ -42,19 +42,23 @@ class LoginResourceIT {
     }
 
     @Test
-    void login() {
-        String accessToken = given()
+    void login(){
+        getAccessToken();
+    }
+
+    @Test
+    void refresh() throws Exception{
+        String accessToken = getAccessToken();
+
+        given()
             .when()
-            .contentType(ContentType.URLENC)
-            .param("username", username)
-            .param("password", password)
-            .post(tenant + "/login")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+            .get("/refresh")
             .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .body("accessToken", notNullValue())
-            .body("expiresIn", equalTo(300))
-            .extract()
-            .path("accessToken").toString();
+            .body("expiresIn", equalTo(300))// Default expires in value
+        ;
     }
 
     @Test
@@ -70,5 +74,20 @@ class LoginResourceIT {
             .body("accessToken", notNullValue())
             .body("expiresIn", equalTo(300)) // Default expires in value
         ;
+    }
+
+    private String getAccessToken() {
+        return given()
+            .when()
+            .contentType(ContentType.URLENC)
+            .param("username", username)
+            .param("password", password)
+            .post(tenant + "/login")
+            .then()
+            .statusCode(Response.Status.OK.getStatusCode())
+            .body("accessToken", notNullValue())
+            .body("expiresIn", equalTo(300))
+            .extract()
+            .path("accessToken").toString();
     }
 }
