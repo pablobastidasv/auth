@@ -49,8 +49,21 @@ class JwtUtilsTest {
     }
 
     @Test
+    void fillClaimsFromMap() {
+        // Given
+        Map<String, Object> claims = getMapClaims();
+
+        // When
+        JWTClaimsSet.Builder builder = jwtUtils.generateClaims(claims);
+        JWTClaimsSet claimsSet = builder.build();
+
+        // Then
+        claims.forEach( (claim, value) -> assertEquals(value, claimsSet.getClaim(claim)));
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
-    void fillClaim() throws Exception {
+    void fillClaimsFromUser() throws Exception {
         // Given
         roles.add(new Role("ADMIN", "Administrator"));
 
@@ -60,7 +73,7 @@ class JwtUtilsTest {
         user.setRoles(roles);
 
         // When
-        JWTClaimsSet.Builder builder = jwtUtils.generateClaimFromUser(user);
+        JWTClaimsSet.Builder builder = jwtUtils.generateClaims(user);
         JWTClaimsSet claimsSet = builder.build();
 
         // Then
@@ -116,10 +129,7 @@ class JwtUtilsTest {
 
     @Test
     void testMapFromClaims(){
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("sub", "username");
-        claims.put("email", "username@test.com");
-        claims.put("ageOfBirth", new Date());
+        Map<String, Object> claims = getMapClaims();
 
         JsonWebToken jwt = mock(JsonWebToken.class);
         when(jwt.getClaimNames()).thenReturn(claims.keySet());
@@ -134,6 +144,14 @@ class JwtUtilsTest {
             assertEquals(claims.get(key), claimsFromJwt.get(key));
         }
 
+    }
+
+    private Map<String, Object> getMapClaims() {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("sub", "username");
+        claims.put("email", "username@test.com");
+        claims.put("ageOfBirth", new Date());
+        return claims;
     }
 
     private void testLongClaim(JWTClaimsSet claimsSet, Long expected, String claimName) throws ParseException {

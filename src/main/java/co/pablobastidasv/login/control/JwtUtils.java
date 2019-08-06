@@ -48,7 +48,7 @@ public class JwtUtils {
         return builder;
     }
 
-    public JWTClaimsSet.Builder generateClaimFromUser(User user) {
+    public JWTClaimsSet.Builder generateClaims(User user) {
         String iss = defineIssuer().orElse(DEFAULT_ISSUER);
         Set<String> group = user.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
 

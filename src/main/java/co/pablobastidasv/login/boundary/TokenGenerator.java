@@ -51,7 +51,7 @@ public class TokenGenerator {
      * @return the JWT Signed.
      */
     public SignedJWT generateSignedToken(User user, String tenant) {
-        JWTClaimsSet.Builder claimsBuilder = jwtUtils.generateClaimFromUser(user);
+        JWTClaimsSet.Builder claimsBuilder = jwtUtils.generateClaims(user);
         jwtUtils.defineTimeClaims(claimsBuilder);
         claimsBuilder.claim("tenant", tenant);
 
