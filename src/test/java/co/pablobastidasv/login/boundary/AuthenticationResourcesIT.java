@@ -8,7 +8,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 import static io.restassured.RestAssured.given;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
@@ -47,7 +46,7 @@ class AuthenticationResourcesIT {
     }
 
     @Test
-    void refresh() throws Exception{
+    void refresh() {
         String accessToken = getAccessToken();
 
         given()

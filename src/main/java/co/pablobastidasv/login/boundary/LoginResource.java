@@ -20,7 +20,6 @@ import static co.pablobastidasv.ConfigurationConstants.JWT_EXPIRES_IN_DEFAULT;
 
 @Path("/{tenantId}/login")
 @RequestScoped
-@Produces(MediaType.APPLICATION_JSON)
 public class LoginResource {
 
     @PathParam("tenantId")
@@ -42,6 +41,7 @@ public class LoginResource {
     @POST
     @PermitAll
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response login(@FormParam("username") String username, @FormParam("password") String password) {
         Optional<User> userOpt = userManager.findByUserAndTenant(username, tenantId);
 

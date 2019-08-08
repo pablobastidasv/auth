@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  auth:
+    build:
+      dockerfile: src/main/docker/Dockerfile.jvm
+      context: .
+    ports:
+      - 8080:8080
+    environment:
+      - quarkus.datasource.url=jdbc:mariadb://auth-db:3306/auth?useMysqlMetadata=true
+      - quarkus.datasource.username=sarah
+      - quarkus.datasource.password=connor
+
+  auth-db:
+    image: mariadb:10.3
+    environment:
+      - MYSQL_ROOT_PASSWORD=my_secret_password
+      - MYSQL_DATABASE=auth
+      - MYSQL_USER=sarah
+      - MYSQL_PASSWORD=connor

@@ -28,7 +28,7 @@ public class User {
     @Email
     private String username;
     @Size(max = 1000)
-    @Column(length = 1000)
+    @Column(name = "enc_key", length = 1000)
     private String key;
     @Size(max = 1000)
     @Column(length = 1000)
