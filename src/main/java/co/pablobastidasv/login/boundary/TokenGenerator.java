@@ -38,7 +38,7 @@ public class TokenGenerator {
      */
     public SignedJWT generateSignedToken(Map<String, Object> claims) {
         JWTClaimsSet.Builder claimsBuilder = jwtUtils.generateClaims(claims);
-        jwtUtils.defineTimeClaims(claimsBuilder);
+        jwtUtils.mandatoryClaims(claimsBuilder);
 
         return generateSignedToken(claimsBuilder.build());
     }
@@ -52,7 +52,7 @@ public class TokenGenerator {
      */
     public SignedJWT generateSignedToken(User user, String tenant) {
         JWTClaimsSet.Builder claimsBuilder = jwtUtils.generateClaims(user);
-        jwtUtils.defineTimeClaims(claimsBuilder);
+        jwtUtils.mandatoryClaims(claimsBuilder);
         claimsBuilder.claim("tenant", tenant);
 
         return generateSignedToken(claimsBuilder.build());

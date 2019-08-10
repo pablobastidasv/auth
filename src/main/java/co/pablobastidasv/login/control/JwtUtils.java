@@ -12,18 +12,19 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import javax.json.JsonNumber;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 import java.time.Clock;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static co.pablobastidasv.ConfigurationConstants.*;
 
 @ApplicationScoped
 public class JwtUtils {
-
-    private static final String DEFAULT_ISSUER = "localhost";
 
     public static final String USER_ID_CLAIM = "user_id";
 
@@ -33,6 +34,9 @@ public class JwtUtils {
     @Inject
     @ConfigProperty(name = JWT_KEY_ID)
     String keyId;
+    @Inject
+    @ConfigProperty(name = "mp.jwt.verify.issuer", defaultValue = "http://localhost")
+    String issuer;
 
     @Inject
     @ConfigProperty(name = JWT_EXPIRES_IN, defaultValue = JWT_EXPIRES_IN_DEFAULT)
@@ -49,41 +53,24 @@ public class JwtUtils {
     }
 
     public JWTClaimsSet.Builder generateClaims(User user) {
-        String iss = defineIssuer().orElse(DEFAULT_ISSUER);
         Set<String> group = user.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
 
         return new JWTClaimsSet.Builder()
             .claim(USER_ID_CLAIM, user.getId())
-            .claim(Claims.jti.name(), UUID.randomUUID().toString())
             .claim(Claims.upn.name(), user.getUsername())
             .claim(Claims.sub.name(), user.getUsername())
-            .claim(Claims.iss.name(), iss)
             .claim(Claims.groups.name(), group);
     }
 
-    Optional<String> defineIssuer(){
-        try {
-            InetAddress ip = InetAddress.getLocalHost();
-            String hostname = ip.getHostName();
-            System.out.println("Your current IP address : " + ip);
-            System.out.println("Your current Hostname (iss) : " + hostname);
-
-            return Optional.of(hostname);
-        } catch (UnknownHostException e) {
-            System.err.println(e.getMessage());
-            return Optional.empty();
-        }
-    }
-
-    public void defineTimeClaims(JWTClaimsSet.Builder claimsBuilder) {
+    public void mandatoryClaims(JWTClaimsSet.Builder claimsBuilder) {
         long currentTimeInSecs = currentTimeInSecs();
         long exp = currentTimeInSecs + expiresIn;
 
-        System.out.printf("Setting exp: %d / %s%n", exp, new Date(1000 * exp));
-
-        claimsBuilder.claim(Claims.exp.name(), exp);
-        claimsBuilder.claim(Claims.iat.name(), currentTimeInSecs);
-        claimsBuilder.claim(Claims.auth_time.name(), currentTimeInSecs);
+        claimsBuilder.claim(Claims.iss.name(), issuer)
+            .claim(Claims.jti.name(), UUID.randomUUID().toString())
+            .claim(Claims.exp.name(), exp)
+            .claim(Claims.iat.name(), currentTimeInSecs)
+            .claim(Claims.auth_time.name(), currentTimeInSecs);
     }
 
     public JWSHeader fillJwsHeader(){
@@ -101,13 +88,33 @@ public class JwtUtils {
     }
 
     public Map<String, Object> mapFromClaims(JsonWebToken jsonWebToken) {
-        Map<String, Object> claims = new HashMap<>();
+        return jsonWebToken.getClaimNames().stream()
+            .filter(this::isCopyable)
+            .collect(Collectors.toMap(
+                claimName -> claimName,
+                claimName -> extractClaimValue(jsonWebToken, claimName)
+            ));
+    }
 
-        for (String claimName : jsonWebToken.getClaimNames()) {
-            Object claimValue = jsonWebToken.getClaim(claimName);
-            claims.put(claimName, claimValue);
+    private Object extractClaimValue(JsonWebToken jsonWebToken, String claimName) {
+        Object claimValue = jsonWebToken.getClaim(claimName);
+
+        if(claimValue instanceof JsonValue){
+            JsonValue value = (JsonValue) claimValue;
+            switch (value.getValueType()) {
+                case NULL: return "null";
+                case NUMBER: return ((JsonNumber) value).bigIntegerValue();
+                case STRING: return ((JsonString) value).getString();
+                case TRUE: return true;
+                case FALSE: return false;
+                default: return "";
+            }
+        } else {
+            return claimValue;
         }
+    }
 
-        return claims;
+    private boolean isCopyable(String claimName) {
+        return !Claims.raw_token.name().equalsIgnoreCase(claimName);
     }
 }

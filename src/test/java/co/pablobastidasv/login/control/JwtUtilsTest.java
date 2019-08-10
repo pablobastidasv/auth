@@ -15,6 +15,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.json.Json;
+import javax.json.JsonNumber;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 import java.text.ParseException;
 import java.time.Clock;
 import java.time.Instant;
@@ -46,6 +50,7 @@ class JwtUtilsTest {
     void init() {
         jwtUtils.keyId = "JWTSuperSecureKeyNoSharePlease!!!";
         jwtUtils.expiresIn = expiresIn;
+        jwtUtils.issuer = "http://localhost";
     }
 
     @Test
@@ -80,8 +85,6 @@ class JwtUtilsTest {
         testStringClaim(claimsSet, expectedUsername, Claims.sub.name());
         testStringClaim(claimsSet, expectedUsername, Claims.upn.name());
         testLongClaim(claimsSet, expectedId, JwtUtils.USER_ID_CLAIM);
-        assertNotNull(claimsSet.getJWTID());
-        assertNotNull(claimsSet.getIssuer());
 
         Set<String> groupsFromClaim = (Set<String>) claimsSet.getClaim(Claims.groups.name());
         assertNotNull(groupsFromClaim);
@@ -89,14 +92,7 @@ class JwtUtilsTest {
     }
 
     @Test
-    void defineIssuer(){
-        Optional<String> issuer = jwtUtils.defineIssuer();
-
-        assertTrue(issuer.isPresent());
-    }
-
-    @Test
-    void defineTimeClaims() throws Exception {
+    void mandatoryClaims() throws Exception {
         // Given
         when(clock.millis()).thenReturn(currentTime);
         Long expectedCurrentTime = currentTime / 1000;
@@ -107,7 +103,7 @@ class JwtUtilsTest {
         builder.expirationTime(Date.from(actualExp));
 
         // When
-        jwtUtils.defineTimeClaims(builder);
+        jwtUtils.mandatoryClaims(builder);
         JWTClaimsSet claimsSet = builder.build();
 
         // Then
@@ -115,6 +111,9 @@ class JwtUtilsTest {
         testLongClaim(claimsSet, expectedExpTime, Claims.exp.name());
         testLongClaim(claimsSet, expectedCurrentTime, Claims.iat.name());
         testLongClaim(claimsSet, expectedCurrentTime, Claims.auth_time.name());
+        assertNotNull(claimsSet.getJWTID());
+        assertNotNull(claimsSet.getIssuer());
+        assertEquals(jwtUtils.issuer, claimsSet.getIssuer());
 
     }
 
@@ -140,10 +139,30 @@ class JwtUtilsTest {
         Map<String, Object> claimsFromJwt = jwtUtils.mapFromClaims(jwt);
 
         assertEquals(claims.size(), claimsFromJwt.size());
+
         for (String key : claimsFromJwt.keySet()) {
-            assertEquals(claims.get(key), claimsFromJwt.get(key));
+            Object objectValue = claims.get(key);
+
+            if (objectValue instanceof JsonValue) {
+                Object valueFromJsonValue = getValueFromJsonValue((JsonValue) objectValue);
+
+                assertEquals(valueFromJsonValue, claimsFromJwt.get(key));
+            } else {
+                assertEquals(objectValue, claimsFromJwt.get(key));
+            }
         }
 
+    }
+
+    private Object getValueFromJsonValue(JsonValue value) {
+        switch (value.getValueType()) {
+            case NULL: return "null";
+            case NUMBER: return ((JsonNumber) value).bigIntegerValue();
+            case STRING: return ((JsonString) value).getString();
+            case TRUE: return true;
+            case FALSE: return false;
+            default: return "";
+        }
     }
 
     private Map<String, Object> getMapClaims() {
@@ -151,6 +170,11 @@ class JwtUtilsTest {
         claims.put("sub", "username");
         claims.put("email", "username@test.com");
         claims.put("ageOfBirth", new Date());
+        claims.put("ugly", JsonValue.FALSE);
+        claims.put("handsome", JsonValue.TRUE);
+        claims.put("user_id", Json.createValue(12));
+        claims.put("int", Json.createValue(12L));
+        claims.put("tenant", Json.createValue("avalane"));
         return claims;
     }
 

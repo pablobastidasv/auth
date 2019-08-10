@@ -77,8 +77,8 @@ class RefreshResourceTest {
 
         LoginContent content = (LoginContent) response.getEntity();
 
-        assertNotNull(content.getAccessToken());
-        assertEquals(myJwtToken, content.getAccessToken());
-        assertTrue(content.getExpiresIn() > 0);
+        assertNotNull(content.accessToken);
+        assertEquals(myJwtToken, content.accessToken);
+        assertTrue(content.expiresIn > 0);
     }
 }
