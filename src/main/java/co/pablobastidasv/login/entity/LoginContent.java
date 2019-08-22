@@ -3,15 +3,15 @@ package co.pablobastidasv.login.entity;
 import com.nimbusds.jwt.SignedJWT;
 
 public class LoginContent {
-    public String accessToken;
-    public Long expiresIn;
+  public String accessToken;
+  public Long expiresIn;
 
-    public LoginContent() {
-    }
+  public LoginContent() {
+  }
 
-    public LoginContent(SignedJWT signedJWT, long expiresIn) {
-        this.accessToken = signedJWT.serialize();
-        this.expiresIn = expiresIn;
-    }
+  public LoginContent(SignedJWT signedJwt, long expiresIn) {
+    this.accessToken = signedJwt.serialize();
+    this.expiresIn = expiresIn;
+  }
 
 }

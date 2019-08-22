@@ -1,12 +1,12 @@
 package co.pablobastidasv;
 
-import javax.enterprise.inject.Produces;
 import java.time.Clock;
+import javax.enterprise.inject.Produces;
 
 public class AppConfig {
 
-    @Produces
-    public Clock clockProvider(){
-        return Clock.systemUTC();
-    }
+  @Produces
+  public Clock clockProvider() {
+    return Clock.systemUTC();
+  }
 }

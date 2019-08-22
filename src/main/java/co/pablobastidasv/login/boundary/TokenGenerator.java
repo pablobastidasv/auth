@@ -10,67 +10,66 @@ import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Map;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 /**
- * Utilities for generating a JWT for testing
+ * Utilities for generating a JWT for testing.
  */
 @ApplicationScoped
 public class TokenGenerator {
 
-    @Inject
-    PrivateKeyUtils privateKeyUtils;
+  @Inject
+  PrivateKeyUtils privateKeyUtils;
 
-    @Inject
-    JwtUtils jwtUtils;
+  @Inject
+  JwtUtils jwtUtils;
 
-    /**
-     * Utility method to generate a SignedJWT from a Map of claims.
-     *
-     * @param claims  - Claims information.
-     * @return the JWT Signed.
-     */
-    public SignedJWT generateSignedToken(Map<String, Object> claims) {
-        JWTClaimsSet.Builder claimsBuilder = jwtUtils.generateClaims(claims);
-        jwtUtils.mandatoryClaims(claimsBuilder);
+  /**
+   * Utility method to generate a SignedJWT from a Map of claims.
+   *
+   * @param claims - Claims information.
+   * @return the JWT Signed.
+   */
+  public SignedJWT generateSignedToken(Map<String, Object> claims) {
+    JWTClaimsSet.Builder claimsBuilder = jwtUtils.generateClaims(claims);
+    jwtUtils.mandatoryClaims(claimsBuilder);
 
-        return generateSignedToken(claimsBuilder.build());
+    return generateSignedToken(claimsBuilder.build());
+  }
+
+  /**
+   * Utility method to generate a SignedJWT from a User and tenant.
+   *
+   * @param user - JWT claims will be based on the information from the user.
+   * @param tenant - Tenant ID where the user belongs.
+   * @return the JWT Signed.
+   */
+  public SignedJWT generateSignedToken(User user, String tenant) {
+    JWTClaimsSet.Builder claimsBuilder = jwtUtils.generateClaims(user);
+    jwtUtils.mandatoryClaims(claimsBuilder);
+    claimsBuilder.claim("tenant", tenant);
+
+    return generateSignedToken(claimsBuilder.build());
+  }
+
+  private SignedJWT generateSignedToken(JWTClaimsSet claimsSet) {
+    try {
+      PrivateKey pk = privateKeyUtils.readPrivateKey();
+      JWSSigner signer = new RSASSASigner(pk);
+      JWSHeader jwsHeader = jwtUtils.fillJwsHeader();
+
+      SignedJWT signedJwt = new SignedJWT(jwsHeader, claimsSet);
+      signedJwt.sign(signer);
+
+      return signedJwt;
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException | JOSEException e) {
+      throw new JwtException();
     }
-
-    /**
-     * Utility method to generate a SignedJWT from a User and tenant.
-     *
-     * @param user  - JWT claims will be based on the information from the user.
-     * @param tenant - Tenant ID where the user belongs.
-     * @return the JWT Signed.
-     */
-    public SignedJWT generateSignedToken(User user, String tenant) {
-        JWTClaimsSet.Builder claimsBuilder = jwtUtils.generateClaims(user);
-        jwtUtils.mandatoryClaims(claimsBuilder);
-        claimsBuilder.claim("tenant", tenant);
-
-        return generateSignedToken(claimsBuilder.build());
-    }
-
-    private SignedJWT generateSignedToken(JWTClaimsSet claimsSet) {
-        try {
-            PrivateKey pk = privateKeyUtils.readPrivateKey();
-            JWSSigner signer = new RSASSASigner(pk);
-            JWSHeader jwsHeader = jwtUtils.fillJwsHeader();
-
-            SignedJWT signedJWT = new SignedJWT(jwsHeader, claimsSet);
-            signedJWT.sign(signer);
-
-            return signedJWT;
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException | JOSEException e) {
-            throw new JwtException();
-        }
-    }
+  }
 
 }

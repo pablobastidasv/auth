@@ -50,6 +50,7 @@ class JwtUtilsTest {
     void init() {
         jwtUtils.keyId = "JWTSuperSecureKeyNoSharePlease!!!";
         jwtUtils.expiresIn = expiresIn;
+        jwtUtils.aud = "avalane";
         jwtUtils.issuer = "http://localhost";
     }
 
@@ -114,6 +115,10 @@ class JwtUtilsTest {
         assertNotNull(claimsSet.getJWTID());
         assertNotNull(claimsSet.getIssuer());
         assertEquals(jwtUtils.issuer, claimsSet.getIssuer());
+        assertNotNull(claimsSet.getAudience());
+        assertFalse(claimsSet.getAudience().isEmpty());
+        assertEquals(1, claimsSet.getAudience().size());
+        assertTrue(claimsSet.getAudience().contains(jwtUtils.aud));
 
     }
 

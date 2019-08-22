@@ -1,65 +1,86 @@
 package co.pablobastidasv.login.boundary;
 
+import static co.pablobastidasv.ConfigurationConstants.JWT_EXPIRES_IN;
+import static co.pablobastidasv.ConfigurationConstants.JWT_EXPIRES_IN_DEFAULT;
+
 import co.pablobastidasv.login.control.PasswordTools;
 import co.pablobastidasv.login.entity.LoginContent;
 import co.pablobastidasv.user.boundary.UserManager;
 import co.pablobastidasv.user.entity.User;
 import com.nimbusds.jwt.SignedJWT;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
+import java.util.Optional;
 import javax.annotation.security.PermitAll;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Optional;
-
-import static co.pablobastidasv.ConfigurationConstants.JWT_EXPIRES_IN;
-import static co.pablobastidasv.ConfigurationConstants.JWT_EXPIRES_IN_DEFAULT;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Path("/{tenantId}/login")
 @RequestScoped
 public class LoginResource {
 
-    @PathParam("tenantId")
-    String tenantId;
+  @PathParam("tenantId")
+  String tenantId;
 
-    @Inject
-    @ConfigProperty(name = JWT_EXPIRES_IN, defaultValue = JWT_EXPIRES_IN_DEFAULT)
-    Integer expiresIn;
+  @Inject
+  @ConfigProperty(name = JWT_EXPIRES_IN, defaultValue = JWT_EXPIRES_IN_DEFAULT)
+  Integer expiresIn;
 
-    @Inject
-    PasswordTools passwordTools;
+  @Inject
+  PasswordTools passwordTools;
 
-    @Inject
-    UserManager userManager;
+  @Inject
+  UserManager userManager;
 
-    @Inject
-    TokenGenerator tokenGenerator;
+  @Inject
+  TokenGenerator tokenGenerator;
 
-    @POST
-    @PermitAll
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response login(@FormParam("username") String username, @FormParam("password") String password) {
-        Optional<User> userOpt = userManager.findByUserAndTenant(username, tenantId);
+  /**
+   * Rest endpoint to authenticate a user based on their username and password.
+   *
+   * <p>If the authentication is correct, the response will have a status 200 and
+   * the entity in the response will contain the JWT that can be used to authenticate the
+   * user in other services.</p>
+   *
+   * <p>If user does not exist, the response will have a status 401</p>
+   *
+   * @param username User name to login
+   * @param password Password to login
+   * @return When {@link Response.Status} is OK, a {@link LoginContent} with the information
+   *         about the JWT and more information.
+   */
+  @POST
+  @PermitAll
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response login(
+      @FormParam("username") String username,
+      @FormParam("password") String password
+  ) {
+    Optional<User> userOpt = userManager.findByUserAndTenant(username, tenantId);
 
-        if(userOpt.isPresent()){
-            User user = userOpt.get();
+    if (userOpt.isPresent()) {
+      User user = userOpt.get();
 
-            if (!passwordTools.validatePassword(password, user.getKey(), user.getSalt())){
-                return Response.status(Response.Status.UNAUTHORIZED).build();
-            }
+      if (!passwordTools.validatePassword(password, user.getKey(), user.getSalt())) {
+        return Response.status(Response.Status.UNAUTHORIZED).build();
+      }
 
-            SignedJWT jwt = tokenGenerator.generateSignedToken(user, tenantId);
+      SignedJWT jwt = tokenGenerator.generateSignedToken(user, tenantId);
 
-            LoginContent content = new LoginContent(jwt, expiresIn);
+      LoginContent content = new LoginContent(jwt, expiresIn);
 
-            return Response.ok(content).build();
-        } else {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
-
+      return Response.ok(content).build();
+    } else {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
     }
+
+  }
 }
