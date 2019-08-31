@@ -2,7 +2,7 @@ package co.pablobastidasv.login.boundary;
 
 import co.pablobastidasv.login.control.JwtException;
 import co.pablobastidasv.login.control.JwtUtils;
-import co.pablobastidasv.login.control.PrivateKeyUtils;
+import co.pablobastidasv.login.control.KeysUtils;
 import co.pablobastidasv.user.entity.User;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSHeader;
@@ -24,7 +24,7 @@ import javax.inject.Inject;
 public class TokenGenerator {
 
   @Inject
-  PrivateKeyUtils privateKeyUtils;
+  KeysUtils keysUtils;
 
   @Inject
   JwtUtils jwtUtils;
@@ -59,7 +59,7 @@ public class TokenGenerator {
 
   private SignedJWT generateSignedToken(JWTClaimsSet claimsSet) {
     try {
-      PrivateKey pk = privateKeyUtils.readPrivateKey();
+      PrivateKey pk = keysUtils.readPrivateKey();
       JWSSigner signer = new RSASSASigner(pk);
       JWSHeader jwsHeader = jwtUtils.fillJwsHeader();
 

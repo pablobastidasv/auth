@@ -31,7 +31,7 @@ class KeyGeneratorTest {
         System.out.write(publicKeyString, 0, publicKeyString.length);
         System.out.println("\n---");
 
-        generateKeyStore(publicKey);
+//        generateKeyStore(publicKey);
     }
 
     private void generateKeyStore(PublicKey key) throws Exception {

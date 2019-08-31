@@ -24,6 +24,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.*;
 
+import static co.pablobastidasv.login.TestConstants.KEY_ID;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -48,7 +49,7 @@ class JwtUtilsTest {
 
     @BeforeEach
     void init() {
-        jwtUtils.keyId = "JWTSuperSecureKeyNoSharePlease!!!";
+        jwtUtils.keyId = KEY_ID;
         jwtUtils.expiresIn = expiresIn;
         jwtUtils.aud = "avalane";
         jwtUtils.issuer = "http://localhost";
