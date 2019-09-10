@@ -6,10 +6,10 @@ services:
       dockerfile: src/main/docker/Dockerfile.jvm
       context: .
     ports:
-      - 8080:8080
+      - 8181:8080
     environment:
       - mp.jwt.verify.publickey=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAinAg1KCfj9j3GMDlQ4aOP+k5/B+P8t8hqHkZYiXrnVrDBWznR0JPLuuc8XColRObIEcCumH+hdzzKsKrG+dZR3ChazEtSu0s63ek72pL4Jc6Q0dq7snbQ7H1SDRpeDjyTvqCj6YQceaAQDCGxYKN0yKME6MPfGvtx+eb5pFdiYk3hQ8BOARbzjxE/y1Upj3qcP18fQgJax+g8SMfBpB2EykRoRDVLevRdS38CC8hVn0dpE+urGrtIQ1JLf93o1gVI/EWYNuaxvusluVg5Jg5QWzyRb3jGqr36A7CzTkSK7KozhVJsjxvRJGv/nbmr1iHBD27U+pXd/hoaulKQWkloQIDAQAB
-      - mp.jwt.verify.issuer=https://quarkus.io/using-jwt-rbac
+      - mp.jwt.verify.issuer=https://avalane.co/auth
       - quarkus.datasource.url=jdbc:mariadb://auth-db:3306/auth?useMysqlMetadata=true
       - quarkus.datasource.username=sarah
       - quarkus.datasource.password=connor
