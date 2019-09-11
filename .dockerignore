@@ -1,4 +1,6 @@
 *
+!src
 !target/*-runner
 !target/*-runner.jar
 !target/lib/*
+!pom.xml
