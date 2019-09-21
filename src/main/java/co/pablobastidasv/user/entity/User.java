@@ -25,7 +25,7 @@ import javax.validation.constraints.Size;
 
 @Entity
 @NamedQueries({
-  @NamedQuery(
+    @NamedQuery(
       name = FIND_BY_USERNAME_AND_TENANT,
       query =
           "SELECT u FROM User u JOIN u.tenants t LEFT JOIN u.roles g"
