@@ -20,6 +20,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
@@ -79,16 +80,16 @@ public class LoginResource {
   }
 
   private Response defineResponse(User user, String password) {
-    switch (user.getState()){
+    switch (user.getState()) {
       case BLOCKED:
         return Response.status(Response.Status.UNAUTHORIZED).build();
       case CREATED:
       case CHANGE_PWD:
-        logger.warn("Response for redirection");
+        return Response.status(Status.OK).entity(new LoginContent()).build();
       default:
     }
 
-    if(isPasswordValid(user, password)){
+    if (isPasswordValid(user, password)) {
       return buildOkResponse(user);
     } else {
       return Response.status(Response.Status.UNAUTHORIZED).build();

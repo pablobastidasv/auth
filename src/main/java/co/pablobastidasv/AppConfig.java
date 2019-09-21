@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 public class AppConfig {
 
   @Produces
-  public Logger loggerProducer(InjectionPoint ip){
+  public Logger loggerProducer(InjectionPoint ip) {
     String clazz = ip.getMember().getDeclaringClass().getName();
     return LoggerFactory.getLogger(clazz);
   }
