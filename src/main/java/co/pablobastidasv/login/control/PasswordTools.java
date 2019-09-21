@@ -9,9 +9,14 @@ import java.util.Optional;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import org.slf4j.Logger;
 
 @ApplicationScoped
 public class PasswordTools {
+
+  @Inject
+  Logger logger;
 
   private static final SecureRandom RAND = new SecureRandom();
 
@@ -19,7 +24,15 @@ public class PasswordTools {
   private static final int KEY_LENGTH = 512;
   private static final String ALGORITHM = "PBKDF2WithHmacSHA512";
 
-  public boolean validatePassword(String password, String key, String salt) {
+  /**
+   * Validate the password giving the encryption keys.
+   *
+   * @param password Plan password.
+   * @param key The key to validate the password.
+   * @param salt The salt used for the password encryption.
+   * @return True if the password is valid, false if not.
+   */
+  public boolean isValid(String password, String key, String salt) {
     Optional<String> optEncrypted = hashPassword(password, salt);
     return optEncrypted.map(s -> s.equals(key)).orElse(false);
   }
@@ -38,7 +51,7 @@ public class PasswordTools {
       byte[] securePassword = fac.generateSecret(spec).getEncoded();
       return Optional.of(Base64.getEncoder().encodeToString(securePassword));
     } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-      System.err.println("Exception encountered in hashPassword()");
+      logger.error("Exception encountered in hashPassword()", ex);
       return Optional.empty();
     } finally {
       spec.clearPassword();
@@ -48,7 +61,7 @@ public class PasswordTools {
   Optional<String> generateSalt(final int length) {
 
     if (length < 1) {
-      System.err.println("error in generateSalt: length must be > 0");
+      logger.warn("error in generateSalt: length must be > 0");
       return Optional.empty();
     }
 
