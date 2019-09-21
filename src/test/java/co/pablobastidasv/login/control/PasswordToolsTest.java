@@ -57,7 +57,7 @@ class PasswordToolsTest {
         Optional<String> optionalHashedPassword = passwordTools.hashPassword(password, salt);
         assertTrue(optionalHashedPassword.isPresent());
 
-        assertTrue(passwordTools.validatePassword(password, optionalHashedPassword.get(), salt));
-        assertFalse(passwordTools.validatePassword(wrongPassword, optionalHashedPassword.get(), salt));
+        assertTrue(passwordTools.isValid(password, optionalHashedPassword.get(), salt));
+        assertFalse(passwordTools.isValid(wrongPassword, optionalHashedPassword.get(), salt));
     }
 }

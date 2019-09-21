@@ -21,10 +21,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
 
 @Path("/{tenantId}/login")
 @RequestScoped
 public class LoginResource {
+
+  @Inject
+  Logger logger;
 
   @PathParam("tenantId")
   String tenantId;
@@ -68,19 +72,36 @@ public class LoginResource {
 
     if (userOpt.isPresent()) {
       User user = userOpt.get();
-
-      if (!passwordTools.validatePassword(password, user.getKey(), user.getSalt())) {
-        return Response.status(Response.Status.UNAUTHORIZED).build();
-      }
-
-      SignedJWT jwt = tokenGenerator.generateSignedToken(user, tenantId);
-
-      LoginContent content = new LoginContent(jwt, expiresIn);
-
-      return Response.ok(content).build();
+      return defineResponse(user, password);
     } else {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
+  }
 
+  private Response defineResponse(User user, String password) {
+    switch (user.getState()){
+      case BLOCKED:
+        return Response.status(Response.Status.UNAUTHORIZED).build();
+      case CREATED:
+      case CHANGE_PWD:
+        logger.warn("Response for redirection");
+      default:
+    }
+
+    if(isPasswordValid(user, password)){
+      return buildOkResponse(user);
+    } else {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+  }
+
+  private boolean isPasswordValid(User user, String password) {
+    return passwordTools.isValid(password, user.getKey(), user.getSalt());
+  }
+
+  private Response buildOkResponse(User user) {
+    SignedJWT jwt = tokenGenerator.generateSignedToken(user, tenantId);
+    LoginContent content = new LoginContent(jwt, expiresIn);
+    return Response.ok(content).build();
   }
 }
