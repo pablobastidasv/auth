@@ -15,14 +15,11 @@ import org.slf4j.Logger;
 @ApplicationScoped
 public class PasswordTools {
 
-  @Inject
-  Logger logger;
-
   private static final SecureRandom RAND = new SecureRandom();
-
   private static final int ITERATIONS = 65536;
   private static final int KEY_LENGTH = 512;
   private static final String ALGORITHM = "PBKDF2WithHmacSHA512";
+  @Inject Logger logger;
 
   /**
    * Validate the password giving the encryption keys.

@@ -17,17 +17,13 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-/**
- * Utilities for generating a JWT for testing.
- */
+/** Utilities for generating a JWT for testing. */
 @ApplicationScoped
 public class TokenGenerator {
 
-  @Inject
-  KeysUtils keysUtils;
+  @Inject KeysUtils keysUtils;
 
-  @Inject
-  JwtUtils jwtUtils;
+  @Inject JwtUtils jwtUtils;
 
   /**
    * Utility method to generate a SignedJWT from a Map of claims.
@@ -71,5 +67,4 @@ public class TokenGenerator {
       throw new JwtException();
     }
   }
-
 }

@@ -25,10 +25,14 @@ import javax.validation.constraints.Size;
 
 @Entity
 @NamedQueries({
-    @NamedQuery(name = FIND_BY_USERNAME_AND_TENANT,
-        query = "SELECT u FROM User u JOIN u.tenants t LEFT JOIN u.roles g"
-              + " WHERE u.username = :" + USERNAME_FIELD
-              + " AND t.id = :" + TENANT_FIELD)
+  @NamedQuery(
+      name = FIND_BY_USERNAME_AND_TENANT,
+      query =
+          "SELECT u FROM User u JOIN u.tenants t LEFT JOIN u.roles g"
+              + " WHERE u.username = :"
+              + USERNAME_FIELD
+              + " AND t.id = :"
+              + TENANT_FIELD)
 })
 @Table(name = "users")
 public class User {
@@ -41,39 +45,43 @@ public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @Size(max = 200, min = 3)
   @Column(length = 200, unique = true)
   @Email
   private String username;
+
   @Size(max = 1000)
   @Column(name = "enc_key", length = 1000)
   private String key;
+
   @Size(max = 1000)
   @Column(length = 1000)
   private String salt;
+
   @Enumerated(EnumType.STRING)
   private State state = State.CREATED;
 
   @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinTable(name = "user_x_tenant",
+  @JoinTable(
+      name = "user_x_tenant",
       joinColumns = @JoinColumn(name = "user_id", nullable = false),
       inverseJoinColumns = @JoinColumn(name = "tenant_id", nullable = false),
-      uniqueConstraints = @UniqueConstraint(
-                                             name = "unq_user_tenant",
-                                             columnNames = {"user_id", "tenant_id"}
-                                           )
-  )
+      uniqueConstraints =
+          @UniqueConstraint(
+              name = "unq_user_tenant",
+              columnNames = {"user_id", "tenant_id"}))
   private List<Tenant> tenants;
 
   @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinTable(name = "user_x_role",
+  @JoinTable(
+      name = "user_x_role",
       joinColumns = @JoinColumn(name = "user_id", nullable = false),
       inverseJoinColumns = @JoinColumn(name = "role_id", nullable = false),
-      uniqueConstraints = @UniqueConstraint(
-                                             name = "unq_user_role",
-                                             columnNames = {"user_id", "role_id"}
-                                           )
-  )
+      uniqueConstraints =
+          @UniqueConstraint(
+              name = "unq_user_role",
+              columnNames = {"user_id", "role_id"}))
   private List<Role> roles;
 
   public Long getId() {

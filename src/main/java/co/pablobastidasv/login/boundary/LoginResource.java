@@ -28,8 +28,7 @@ import org.slf4j.Logger;
 @RequestScoped
 public class LoginResource {
 
-  @Inject
-  Logger logger;
+  @Inject Logger logger;
 
   @PathParam("tenantId")
   String tenantId;
@@ -38,37 +37,31 @@ public class LoginResource {
   @ConfigProperty(name = JWT_EXPIRES_IN, defaultValue = JWT_EXPIRES_IN_DEFAULT)
   Integer expiresIn;
 
-  @Inject
-  PasswordTools passwordTools;
+  @Inject PasswordTools passwordTools;
 
-  @Inject
-  UserManager userManager;
+  @Inject UserManager userManager;
 
-  @Inject
-  TokenGenerator tokenGenerator;
+  @Inject TokenGenerator tokenGenerator;
 
   /**
    * Rest endpoint to authenticate a user based on their username and password.
    *
-   * <p>If the authentication is correct, the response will have a status 200 and
-   * the entity in the response will contain the JWT that can be used to authenticate the
-   * user in other services.</p>
+   * <p>If the authentication is correct, the response will have a status 200 and the entity in the
+   * response will contain the JWT that can be used to authenticate the user in other services.
    *
-   * <p>If user does not exist, the response will have a status 401</p>
+   * <p>If user does not exist, the response will have a status 401
    *
    * @param username User name to login
    * @param password Password to login
-   * @return When {@link Response.Status} is OK, a {@link LoginContent} with the information
-   *         about the JWT and more information.
+   * @return When {@link Response.Status} is OK, a {@link LoginContent} with the information about
+   *     the JWT and more information.
    */
   @POST
   @PermitAll
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(MediaType.APPLICATION_JSON)
   public Response login(
-      @FormParam("username") String username,
-      @FormParam("password") String password
-  ) {
+      @FormParam("username") String username, @FormParam("password") String password) {
     Optional<User> userOpt = userManager.findByUserAndTenant(username, tenantId);
 
     if (userOpt.isPresent()) {

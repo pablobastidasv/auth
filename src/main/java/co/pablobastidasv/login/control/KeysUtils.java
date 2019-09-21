@@ -11,14 +11,12 @@ import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import java.util.UUID;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -30,9 +28,11 @@ public class KeysUtils {
   @Inject
   @ConfigProperty(name = JWT_PRIVATE_KEY)
   String privateKey;
+
   @Inject
   @ConfigProperty(name = MP_JWT_PUBLIC_KEY)
   String publicKey;
+
   @Inject
   @ConfigProperty(name = JWT_KEY_ID)
   String keyId;
@@ -49,8 +49,7 @@ public class KeysUtils {
     byte[] decodedKey = Base64.getDecoder().decode(privateKey);
     PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decodedKey);
 
-    return KeyFactory.getInstance(RsaKeyUtil.RSA)
-        .generatePrivate(keySpec);
+    return KeyFactory.getInstance(RsaKeyUtil.RSA).generatePrivate(keySpec);
   }
 
   /**
@@ -65,8 +64,7 @@ public class KeysUtils {
     byte[] decodedKey = Base64.getDecoder().decode(publicKey);
     EncodedKeySpec keySpec = new X509EncodedKeySpec(decodedKey);
 
-    return KeyFactory.getInstance(RsaKeyUtil.RSA)
-        .generatePublic(keySpec);
+    return KeyFactory.getInstance(RsaKeyUtil.RSA).generatePublic(keySpec);
   }
 
   /**

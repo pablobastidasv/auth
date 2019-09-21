@@ -3,7 +3,8 @@ package co.pablobastidasv.login.control;
 import static co.pablobastidasv.login.TestConstants.KEY_ID;
 import static co.pablobastidasv.login.TestConstants.PRIVATE_KEY;
 import static co.pablobastidasv.login.TestConstants.PUBLIC_KEY;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.nimbusds.jose.jwk.JWK;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +15,7 @@ class KeysUtilsTest {
   KeysUtils keysUtils;
 
   @BeforeEach
-  void init(){
+  void init() {
     keysUtils = new KeysUtils();
 
     keysUtils.privateKey = PRIVATE_KEY;
@@ -23,11 +24,10 @@ class KeysUtilsTest {
   }
 
   @Test
-  void generateJwk(){
+  void generateJwk() {
     JWK jwk = keysUtils.generateJwk();
 
     assertNotNull(jwk);
     assertEquals(KEY_ID, jwk.getKeyID());
   }
-
 }

@@ -26,14 +26,11 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @Produces(MediaType.APPLICATION_JSON)
 public class RefreshResource {
 
-  @Inject
-  JwtUtils jwtUtils;
+  @Inject JwtUtils jwtUtils;
 
-  @Inject
-  JsonWebToken jsonWebToken;
+  @Inject JsonWebToken jsonWebToken;
 
-  @Inject
-  TokenGenerator tokenGenerator;
+  @Inject TokenGenerator tokenGenerator;
 
   @Inject
   @ConfigProperty(name = JWT_EXPIRES_IN, defaultValue = JWT_EXPIRES_IN_DEFAULT)

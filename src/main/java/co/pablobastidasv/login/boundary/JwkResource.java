@@ -14,8 +14,7 @@ import net.minidev.json.JSONObject;
 @Produces(MediaType.APPLICATION_JSON)
 public class JwkResource {
 
-  @Inject
-  KeysUtils keysUtils;
+  @Inject KeysUtils keysUtils;
 
   /**
    * Rest endpoint to provide the JsonWebKey.
@@ -28,5 +27,4 @@ public class JwkResource {
 
     return Response.ok(jwk.toJSONObject()).build();
   }
-
 }

@@ -1,54 +1,54 @@
 package co.pablobastidasv.login.control;
 
-import org.junit.jupiter.api.Test;
-
-import javax.crypto.KeyGenerator;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.*;
+import java.security.Key;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class KeyGeneratorTest {
 
-    @Test
-    void generateKeys() throws Exception {
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-        kpg.initialize(2048);
-        KeyPair pair = kpg.generateKeyPair();
+  private static byte[] makeWritable(Key key) {
+    byte[] encoded = key.getEncoded();
+    return makeWritable(encoded);
+  }
 
-        PrivateKey privateKey = pair.getPrivate();
-        PublicKey publicKey = pair.getPublic();
-        PKCS8EncodedKeySpec encoded = new PKCS8EncodedKeySpec(publicKey.getEncoded());
-        byte[] privateKeyString = makeWritable(privateKey);
-        byte[] publicKeyString = makeWritable(encoded.getEncoded());
-        System.out.println("private key---");
-        System.out.write(privateKeyString, 0, privateKeyString.length);
-        System.out.println("\n---");
-        System.out.println("public key---");
-        System.out.write(publicKeyString, 0, publicKeyString.length);
-        System.out.println("\n---");
+  private static byte[] makeWritable(byte[] content) {
+    return Base64.getEncoder().encode(content);
+  }
 
-//        generateKeyStore(publicKey);
-    }
+  @Test
+  void generateKeys() throws Exception {
+    KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+    kpg.initialize(2048);
+    KeyPair pair = kpg.generateKeyPair();
 
-    private void generateKeyStore(PublicKey key) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JCEKS");
-        keyStore.load(null, null);
+    PrivateKey privateKey = pair.getPrivate();
+    PublicKey publicKey = pair.getPublic();
+    PKCS8EncodedKeySpec encoded = new PKCS8EncodedKeySpec(publicKey.getEncoded());
+    byte[] privateKeyString = makeWritable(privateKey);
+    byte[] publicKeyString = makeWritable(encoded.getEncoded());
+    System.out.println("private key---");
+    System.out.write(privateKeyString, 0, privateKeyString.length);
+    System.out.println("\n---");
+    System.out.println("public key---");
+    System.out.write(publicKeyString, 0, publicKeyString.length);
+    System.out.println("\n---");
 
-        keyStore.setKeyEntry("secret", key, "password".toCharArray(), null);
+    //        generateKeyStore(publicKey);
+  }
 
-        keyStore.store(new FileOutputStream("output.jceks"), "password".toCharArray());
-    }
+  private void generateKeyStore(PublicKey key) throws Exception {
+    KeyStore keyStore = KeyStore.getInstance("JCEKS");
+    keyStore.load(null, null);
 
-    private static byte[] makeWritable(Key key) {
-        byte[] encoded = key.getEncoded();
-        return makeWritable(encoded);
-    }
+    keyStore.setKeyEntry("secret", key, "password".toCharArray(), null);
 
-    private static byte[] makeWritable(byte[] content) {
-        return Base64.getEncoder().encode(content);
-    }
+    keyStore.store(new FileOutputStream("output.jceks"), "password".toCharArray());
+  }
 }

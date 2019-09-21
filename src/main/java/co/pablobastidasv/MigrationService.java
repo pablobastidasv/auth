@@ -6,8 +6,7 @@ import org.flywaydb.core.Flyway;
 
 @ApplicationScoped
 public class MigrationService {
-  @Inject
-  Flyway flyway;
+  @Inject Flyway flyway;
 
   public void checkMigration() {
     // This will print 1.0.0

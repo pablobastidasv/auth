@@ -8,8 +8,5 @@ import javax.ws.rs.Path;
 @Path("/users")
 public class UserResource {
 
-  @Inject
-  UserManager userManager;
-
-
+  @Inject UserManager userManager;
 }

@@ -27,16 +27,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class LoginResourceTest {
 
-  @Mock private PasswordTools passwordTools;
-
-  @Mock private UserManager userManager;
-
-  @Mock TokenGenerator tokenGenerator;
-
-  @InjectMocks private LoginResource resource;
-
   private static final String username = "username";
   private static final String tenant = "avalane";
+  @Mock TokenGenerator tokenGenerator;
+  @Mock private PasswordTools passwordTools;
+  @Mock private UserManager userManager;
+  @InjectMocks private LoginResource resource;
 
   @BeforeEach
   void init() {

@@ -10,8 +10,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "tenants")
 public class Tenant {
-  @Id
-  private String id;
+  @Id private String id;
+
   @Column(length = 200)
   private String name;
 
