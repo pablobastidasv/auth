@@ -30,16 +30,15 @@ public class JwtUtils {
 
   public static final String USER_ID_CLAIM = "user_id";
 
-  @Inject Clock clock;
+  @Inject
+  Clock clock;
 
   @Inject
   @ConfigProperty(name = JWT_KEY_ID)
   String keyId;
-
   @Inject
   @ConfigProperty(name = "mp.jwt.verify.issuer", defaultValue = "http://localhost")
   String issuer;
-
   @ConfigProperty(name = JWT_AUD, defaultValue = "avalane")
   String aud;
 
@@ -67,13 +66,13 @@ public class JwtUtils {
   /**
    * Based on the user information a {@link JWTClaimsSet.Builder} is created.
    *
-   * <p>The Builder will contain below claims:
+   * <p>The Builder will contain below claims:</p>
    *
    * <ul>
-   *   <li><strong>upn</strong>: with the <i>username</i> information
-   *   <li><strong>sub</strong>: with the <i>username</i> information
-   *   <li><strong>groups</strong>: with the <i>roles</i> information
-   *   <li><strong>user_id</strong>: with the <i>userId</i> information
+   *   <li><strong>upn</strong>: with the <i>username</i> information</li>
+   *   <li><strong>sub</strong>: with the <i>username</i> information</li>
+   *   <li><strong>groups</strong>: with the <i>roles</i> information</li>
+   *   <li><strong>user_id</strong>: with the <i>userId</i> information</li>
    * </ul>
    *
    * @param user The user from the database.
@@ -98,8 +97,7 @@ public class JwtUtils {
     long currentTimeInSecs = currentTimeInSecs();
     long exp = currentTimeInSecs + expiresIn;
 
-    claimsBuilder
-        .claim(Claims.iss.name(), issuer)
+    claimsBuilder.claim(Claims.iss.name(), issuer)
         .claim(Claims.jti.name(), UUID.randomUUID().toString())
         .claim(Claims.exp.name(), exp)
         .claim(Claims.aud.name(), aud)
@@ -114,7 +112,10 @@ public class JwtUtils {
    * @return A JwsHeader ready to use.
    */
   public JWSHeader fillJwsHeader() {
-    return new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(keyId).type(JOSEObjectType.JWT).build();
+    return new JWSHeader.Builder(JWSAlgorithm.RS256)
+        .keyID(keyId)
+        .type(JOSEObjectType.JWT)
+        .build();
   }
 
   /**
@@ -127,7 +128,8 @@ public class JwtUtils {
   }
 
   /**
-   * Extract the claims information from a {@link JsonWebToken} and stored in a Map to work with it.
+   * Extract the claims information from a {@link JsonWebToken} and stored in a Map to
+   * work with it.
    *
    * @param jsonWebToken The JWT object from the logged user.
    * @return A map with all the claims from the JWT.
@@ -135,9 +137,10 @@ public class JwtUtils {
   public Map<String, Object> mapFromClaims(JsonWebToken jsonWebToken) {
     return jsonWebToken.getClaimNames().stream()
         .filter(this::isCopyable)
-        .collect(
-            Collectors.toMap(
-                claimName -> claimName, claimName -> extractClaimValue(jsonWebToken, claimName)));
+        .collect(Collectors.toMap(
+            claimName -> claimName,
+            claimName -> extractClaimValue(jsonWebToken, claimName)
+        ));
   }
 
   private Object extractClaimValue(JsonWebToken jsonWebToken, String claimName) {

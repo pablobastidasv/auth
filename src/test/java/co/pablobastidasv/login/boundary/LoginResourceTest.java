@@ -9,7 +9,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import co.pablobastidasv.login.control.PasswordTools;
+import co.pablobastidasv.user.boundary.PasswordTools;
 import co.pablobastidasv.login.entity.LoginContent;
 import co.pablobastidasv.user.boundary.UserManager;
 import co.pablobastidasv.user.entity.State;
