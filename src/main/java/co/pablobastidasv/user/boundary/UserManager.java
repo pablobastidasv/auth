@@ -6,15 +6,12 @@ import static co.pablobastidasv.user.entity.User.USERNAME_FIELD;
 
 import co.pablobastidasv.user.entity.User;
 import co.pablobastidasv.user.entity.UserEvent;
-import io.smallrye.reactive.messaging.annotations.Broadcast;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.reactive.messaging.Outgoing;
 
 @ApplicationScoped
 public class UserManager {
@@ -50,11 +47,11 @@ public class UserManager {
    * @return The assigned password in Raw format
    */
   @Transactional
-  public User createUser(UserEvent userEvent){
+  public User createUser(UserEvent userEvent) {
     User user = new User(passwordTools)
-        .setUsername(userEvent.emails.get(0).email)
-        .setUserId(userEvent.userId)
-        .resetPassword();
+            .setUsername(userEvent.emails.get(0).email)
+            .setUserId(userEvent.userId)
+            .resetPassword();
 
     em.persist(user);
     em.detach(user);

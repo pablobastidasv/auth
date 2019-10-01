@@ -2,8 +2,6 @@ package co.pablobastidasv.user.entity;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Objects;
@@ -24,11 +22,13 @@ public class PasswordToken {
   private Long id;
 
   @NotNull
-  @Column(name="password_token", length = 200)
+  @Column(name = "password_token", length = 200)
   private String token;
+
   @NotNull
   @Temporal(TemporalType.TIMESTAMP)
   private Date expirationTime;
+
   @ManyToOne
   @JoinColumn(name = "user_id")
   private User userId;
@@ -52,17 +52,21 @@ public class PasswordToken {
     return userId;
   }
 
-  public static class Builder{
+  public static class Builder {
 
     private final PasswordToken passwordToken;
 
-    public Builder(){
+    /**
+     * Token password builder.
+     *
+     * <p>Builder pattern to instantiate a new PasswordToken with the required information
+     * passing the minimum required.</p>
+     */
+    public Builder() {
       this.passwordToken = new PasswordToken();
       this.passwordToken.token = UUID.randomUUID().toString();
 
-      Instant expirationInstant = Instant.now(Clock.systemUTC())
-          .plus(15, ChronoUnit.MINUTES);
-
+      Instant expirationInstant = Instant.now(Clock.systemUTC()).plus(15, ChronoUnit.MINUTES);
 
       this.passwordToken.expirationTime = Date.from(expirationInstant);
     }
@@ -77,11 +81,10 @@ public class PasswordToken {
       return this;
     }
 
-    public PasswordToken build(){
+    public PasswordToken build() {
       Objects.requireNonNull(this.passwordToken.userId);
       return this.passwordToken;
     }
-
   }
 
 }

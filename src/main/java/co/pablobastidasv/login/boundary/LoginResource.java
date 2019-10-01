@@ -3,8 +3,8 @@ package co.pablobastidasv.login.boundary;
 import static co.pablobastidasv.ConfigurationConstants.JWT_EXPIRES_IN;
 import static co.pablobastidasv.ConfigurationConstants.JWT_EXPIRES_IN_DEFAULT;
 
-import co.pablobastidasv.user.boundary.PasswordTools;
 import co.pablobastidasv.login.entity.LoginContent;
+import co.pablobastidasv.user.boundary.PasswordTools;
 import co.pablobastidasv.user.boundary.UserManager;
 import co.pablobastidasv.user.entity.User;
 import com.nimbusds.jwt.SignedJWT;

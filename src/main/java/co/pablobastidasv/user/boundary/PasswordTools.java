@@ -95,9 +95,9 @@ public class PasswordTools {
    *
    * @return A random password
    */
-  public String generateRandomPassword(){
+  public String generateRandomPassword() {
     return RAND.ints(18, 33, 122)
-        .mapToObj(i -> String.valueOf((char)i))
+        .mapToObj(i -> String.valueOf((char) i))
         .collect(Collectors.joining());
   }
 }

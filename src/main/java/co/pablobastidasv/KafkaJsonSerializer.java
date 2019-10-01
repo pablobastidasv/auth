@@ -7,7 +7,9 @@ import org.apache.kafka.common.serialization.Serializer;
 public class KafkaJsonSerializer<T> implements Serializer<T> {
 
   @Override
-  public void configure(Map<String, ?> configs, boolean isKey) {}
+  public void configure(Map<String, ?> configs, boolean isKey) {
+
+  }
 
   @Override
   public byte[] serialize(String topic, T data) {
@@ -15,5 +17,7 @@ public class KafkaJsonSerializer<T> implements Serializer<T> {
   }
 
   @Override
-  public void close() {}
+  public void close() {
+
+  }
 }

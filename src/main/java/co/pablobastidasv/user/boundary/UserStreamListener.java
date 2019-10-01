@@ -16,6 +16,15 @@ public class UserStreamListener {
   @Inject Logger log;
   @Inject UserManager userManager;
 
+  /**
+   * Method triggered when a user created event arrives to the Kafka.
+   *
+   * <p>This method will create the user login and trigger a new event indicating
+   * that the login user has been created.</p>
+   *
+   * @param message User event from the kafka topic
+   * @return The user created to be published in the kafka topic
+   */
   @Incoming("user_created")
   @Outgoing("login_created")
   public KafkaMessage<String, User> onUserCreated(KafkaMessage<String, String> message) {

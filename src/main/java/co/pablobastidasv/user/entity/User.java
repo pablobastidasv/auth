@@ -6,7 +6,6 @@ import static co.pablobastidasv.user.entity.User.USERNAME_FIELD;
 
 import co.pablobastidasv.user.boundary.PasswordTools;
 import java.util.List;
-import javax.json.bind.annotation.JsonbProperty;
 import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,7 +18,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -114,16 +112,14 @@ public class User {
   /**
    * Creates a random password and <salt>salt</salt> and generate the <code>key</code>.
    *
-   * This method will also change the user status to <code>CHANGE_PWD</code> leaving the user
+   * <p>This method will also change the user status to <code>CHANGE_PWD</code> leaving the user
    * ready to reassign a new password.
    *
    * @return this user.
    */
-  public User resetPassword(){
+  public User resetPassword() {
     String password = this.passwordTools.generateRandomPassword();
-    resetPassword(password);
-
-    return this;
+    return resetPassword(password);
   }
 
   /**
@@ -132,7 +128,7 @@ public class User {
    * @param password Password to assign to the actual User.
    * @return this user.
    */
-  public User resetPassword(String password){
+  public User resetPassword(String password) {
     this.salt = passwordTools.generateSalt();
     this.key = passwordTools.hashPassword(password, salt);
 

@@ -12,11 +12,11 @@ public class UserEvent {
 
   @Override
   public String toString() {
-    return "UserEvent{" +
-        "userId='" + userId + '\'' +
-        ", emails=" + emails +
-        ", hasUser=" + hasUser +
-        '}';
+    return "UserEvent{"
+        + "userId='" + userId + "'"
+        + ", emails=" + emails
+        + ", hasUser=" + hasUser
+        + '}';
   }
 
   public static class Email {
@@ -25,10 +25,7 @@ public class UserEvent {
 
     @Override
     public String toString() {
-      return "Email{" +
-          "email='" + email + '\'' +
-          ", type='" + type + '\'' +
-          '}';
+      return "Email{email='" + email + "', type='" + type + "'}";
     }
   }
 }
