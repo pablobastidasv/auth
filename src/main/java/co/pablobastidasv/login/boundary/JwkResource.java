@@ -23,7 +23,7 @@ public class JwkResource {
    */
   @GET
   public Response retrieveJwk() {
-    JWK jwk = keysUtils.generateJwk();
+    var jwk = keysUtils.generateJwk();
 
     return Response.ok(jwk.toJSONObject()).build();
   }

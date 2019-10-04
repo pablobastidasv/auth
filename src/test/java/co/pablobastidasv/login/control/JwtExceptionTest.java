@@ -8,7 +8,7 @@ class JwtExceptionTest {
 
   @Test
   void internalErrorResponse() {
-    JwtException jwtException = new JwtException();
+    var jwtException = new JwtException();
 
     assertEquals(500, jwtException.getResponse().getStatus());
   }

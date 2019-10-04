@@ -29,11 +29,11 @@ public class UserStreamListener {
   @Outgoing("login_created")
   public KafkaMessage<String, User> onUserCreated(KafkaMessage<String, String> message) {
     log.debug("Message received = {}", message);
-    UserEvent userEvent = JsonbBuilder.create().fromJson(message.getPayload(), UserEvent.class);
-    userEvent.userId = Long.valueOf(message.getKey());
+    var userEvent = JsonbBuilder.create().fromJson(message.getPayload(), UserEvent.class);
+    userEvent.userId = message.getKey();
     log.debug("Event received = {}", userEvent);
 
-    User user = userManager.createUser(userEvent);
+    var user = userManager.createUser(userEvent);
 
     return KafkaMessage.of(message.getKey(), user);
   }

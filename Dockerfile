@@ -1,12 +1,10 @@
-FROM maven:3-jdk-8 as builder
-COPY src/ src/
+FROM maven:3-jdk-11 as builder
 COPY pom.xml pom.xml
+COPY src/ src/
 RUN mvn package -DskipTests -B
 
-FROM fabric8/java-alpine-openjdk8-jre
-RUN apk add --no-cache nss
+FROM openjdk:11.0.4-jre-slim
 ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
-ENV AB_ENABLED=jmx_exporter
 COPY --from=builder target/lib/* /deployments/lib/
 COPY --from=builder target/*-runner.jar /deployments/app.jar
-ENTRYPOINT [ "/deployments/run-java.sh" ]
+ENTRYPOINT [ "java", "-jar",  "/deployments/app.jar"]

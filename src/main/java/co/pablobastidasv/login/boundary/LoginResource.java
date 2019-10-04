@@ -30,12 +30,10 @@ public class LoginResource {
 
   @Inject Logger logger;
 
-  @PathParam("tenantId")
-  String tenantId;
+  @PathParam("tenantId") String tenantId;
 
-  @Inject
   @ConfigProperty(name = JWT_EXPIRES_IN, defaultValue = JWT_EXPIRES_IN_DEFAULT)
-  Integer expiresIn;
+  @Inject Integer expiresIn;
 
   @Inject PasswordTools passwordTools;
 
@@ -62,10 +60,10 @@ public class LoginResource {
   @Produces(MediaType.APPLICATION_JSON)
   public Response login(
       @FormParam("username") String username, @FormParam("password") String password) {
-    Optional<User> userOpt = userManager.findByUserAndTenant(username, tenantId);
+    var userOpt = userManager.findByUserAndTenant(username, tenantId);
 
     if (userOpt.isPresent()) {
-      User user = userOpt.get();
+      var user = userOpt.get();
       return defineResponse(user, password);
     } else {
       return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -94,8 +92,8 @@ public class LoginResource {
   }
 
   private Response buildOkResponse(User user) {
-    SignedJWT jwt = tokenGenerator.generateSignedToken(user, tenantId);
-    LoginContent content = new LoginContent(jwt, expiresIn);
+    var jwt = tokenGenerator.generateSignedToken(user, tenantId);
+    var content = new LoginContent(jwt, expiresIn);
     return Response.ok(content).build();
   }
 }

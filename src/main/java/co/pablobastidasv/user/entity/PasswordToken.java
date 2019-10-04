@@ -66,7 +66,7 @@ public class PasswordToken {
       this.passwordToken = new PasswordToken();
       this.passwordToken.token = UUID.randomUUID().toString();
 
-      Instant expirationInstant = Instant.now(Clock.systemUTC()).plus(15, ChronoUnit.MINUTES);
+      var expirationInstant = Instant.now(Clock.systemUTC()).plus(15, ChronoUnit.MINUTES);
 
       this.passwordToken.expirationTime = Date.from(expirationInstant);
     }

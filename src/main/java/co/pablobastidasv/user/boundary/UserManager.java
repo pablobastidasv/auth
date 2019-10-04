@@ -29,7 +29,7 @@ public class UserManager {
    */
   public Optional<User> findByUserAndTenant(String username, String tenantId) {
     try {
-      User user = em.createNamedQuery(FIND_BY_USERNAME_AND_TENANT, User.class)
+      var user = em.createNamedQuery(FIND_BY_USERNAME_AND_TENANT, User.class)
               .setParameter(USERNAME_FIELD, username)
               .setParameter(TENANT_FIELD, tenantId)
               .getSingleResult();
@@ -48,7 +48,7 @@ public class UserManager {
    */
   @Transactional
   public User createUser(UserEvent userEvent) {
-    User user = new User(passwordTools)
+    var user = new User(passwordTools)
             .setUsername(userEvent.emails.get(0).email)
             .setUserId(userEvent.userId)
             .resetPassword();

@@ -55,7 +55,7 @@ public class User {
   @NotNull
   @Column(name = "system_user_id")
   @JsonbTransient
-  private Long userId;
+  private String userId;
 
   @Size(max = 200, min = 3)
   @Column(length = 200, unique = true)
@@ -118,7 +118,7 @@ public class User {
    * @return this user.
    */
   public User resetPassword() {
-    String password = this.passwordTools.generateRandomPassword();
+    var password = this.passwordTools.generateRandomPassword();
     return resetPassword(password);
   }
 
@@ -147,11 +147,11 @@ public class User {
     this.id = id;
   }
 
-  public Long getUserId() {
+  public String getUserId() {
     return userId;
   }
 
-  public User setUserId(Long userId) {
+  public User setUserId(String userId) {
     this.userId = userId;
     return this;
   }

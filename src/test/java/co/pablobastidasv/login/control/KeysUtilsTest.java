@@ -25,7 +25,7 @@ class KeysUtilsTest {
 
   @Test
   void generateJwk() {
-    JWK jwk = keysUtils.generateJwk();
+    var jwk = keysUtils.generateJwk();
 
     assertNotNull(jwk);
     assertEquals(KEY_ID, jwk.getKeyID());

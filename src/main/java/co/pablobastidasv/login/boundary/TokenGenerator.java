@@ -32,7 +32,7 @@ public class TokenGenerator {
    * @return the JWT Signed.
    */
   public SignedJWT generateSignedToken(Map<String, Object> claims) {
-    JWTClaimsSet.Builder claimsBuilder = jwtUtils.generateClaims(claims);
+    var claimsBuilder = jwtUtils.generateClaims(claims);
     jwtUtils.mandatoryClaims(claimsBuilder);
 
     return generateSignedToken(claimsBuilder.build());
@@ -46,7 +46,7 @@ public class TokenGenerator {
    * @return the JWT Signed.
    */
   public SignedJWT generateSignedToken(User user, String tenant) {
-    JWTClaimsSet.Builder claimsBuilder = jwtUtils.generateClaims(user);
+    var claimsBuilder = jwtUtils.generateClaims(user);
     jwtUtils.mandatoryClaims(claimsBuilder);
     claimsBuilder.claim("tenant", tenant);
 
@@ -55,11 +55,11 @@ public class TokenGenerator {
 
   private SignedJWT generateSignedToken(JWTClaimsSet claimsSet) {
     try {
-      PrivateKey pk = keysUtils.readPrivateKey();
-      JWSSigner signer = new RSASSASigner(pk);
-      JWSHeader jwsHeader = jwtUtils.fillJwsHeader();
+      var pk = keysUtils.readPrivateKey();
+      var signer = new RSASSASigner(pk);
+      var jwsHeader = jwtUtils.fillJwsHeader();
 
-      SignedJWT signedJwt = new SignedJWT(jwsHeader, claimsSet);
+      var signedJwt = new SignedJWT(jwsHeader, claimsSet);
       signedJwt.sign(signer);
 
       return signedJwt;

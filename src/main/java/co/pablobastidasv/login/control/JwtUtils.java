@@ -30,21 +30,19 @@ public class JwtUtils {
 
   public static final String USER_ID_CLAIM = "user_id";
 
-  @Inject
-  Clock clock;
+  @Inject Clock clock;
 
-  @Inject
   @ConfigProperty(name = JWT_KEY_ID)
-  String keyId;
-  @Inject
-  @ConfigProperty(name = "mp.jwt.verify.issuer", defaultValue = "http://localhost")
-  String issuer;
-  @ConfigProperty(name = JWT_AUD, defaultValue = "avalane")
-  String aud;
+  @Inject String keyId;
 
-  @Inject
+  @ConfigProperty(name = "mp.jwt.verify.issuer", defaultValue = "http://localhost")
+  @Inject String issuer;
+
+  @ConfigProperty(name = JWT_AUD, defaultValue = "avalane")
+  @Inject String aud;
+
   @ConfigProperty(name = JWT_EXPIRES_IN, defaultValue = JWT_EXPIRES_IN_DEFAULT)
-  Integer expiresIn;
+  @Inject Integer expiresIn;
 
   /**
    * Based on a key value object representing claim values, generate a {@link JWTClaimsSet.Builder}
@@ -54,7 +52,7 @@ public class JwtUtils {
    * @return A builder ready to work with the information of the input.
    */
   public JWTClaimsSet.Builder generateClaims(Map<String, Object> claimsMap) {
-    JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
+    var builder = new JWTClaimsSet.Builder();
 
     for (String s : claimsMap.keySet()) {
       builder.claim(s, claimsMap.get(s));
@@ -94,8 +92,8 @@ public class JwtUtils {
    * @param claimsBuilder The builder where the claims will be added.
    */
   public void mandatoryClaims(JWTClaimsSet.Builder claimsBuilder) {
-    long currentTimeInSecs = currentTimeInSecs();
-    long exp = currentTimeInSecs + expiresIn;
+    var currentTimeInSecs = currentTimeInSecs();
+    var exp = currentTimeInSecs + expiresIn;
 
     claimsBuilder.claim(Claims.iss.name(), issuer)
         .claim(Claims.jti.name(), UUID.randomUUID().toString())
@@ -144,10 +142,10 @@ public class JwtUtils {
   }
 
   private Object extractClaimValue(JsonWebToken jsonWebToken, String claimName) {
-    Object claimValue = jsonWebToken.getClaim(claimName);
+    var claimValue = jsonWebToken.getClaim(claimName);
 
     if (claimValue instanceof JsonValue) {
-      JsonValue value = (JsonValue) claimValue;
+      var value = (JsonValue) claimValue;
       switch (value.getValueType()) {
         case NULL:
           return "null";

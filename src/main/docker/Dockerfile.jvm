@@ -14,10 +14,8 @@
 # docker run -i --rm -p 8080:8080 quarkus/auth-jvm
 #
 ###
-FROM fabric8/java-alpine-openjdk8-jre
-RUN apk add --no-cache nss
+FROM openjdk:11.0.4-jre-slim
 ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
-ENV AB_ENABLED=jmx_exporter
 COPY target/lib/* /deployments/lib/
 COPY target/*-runner.jar /deployments/app.jar
-ENTRYPOINT [ "/deployments/run-java.sh" ]
+ENTRYPOINT [ "java", "-jar",  "/deployments/app.jar"]

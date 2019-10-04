@@ -6,7 +6,7 @@ import javax.json.bind.annotation.JsonbNillable;
 @JsonbNillable
 public class UserEvent {
 
-  public Long userId;
+  public String userId;
   public List<Email> emails;
   public boolean hasUser;
 

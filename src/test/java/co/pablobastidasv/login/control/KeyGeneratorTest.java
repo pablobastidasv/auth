@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class KeyGeneratorTest {
 
   private static byte[] makeWritable(Key key) {
-    byte[] encoded = key.getEncoded();
+    var encoded = key.getEncoded();
     return makeWritable(encoded);
   }
 
@@ -24,15 +24,15 @@ class KeyGeneratorTest {
 
   @Test
   void generateKeys() throws Exception {
-    KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+    var kpg = KeyPairGenerator.getInstance("RSA");
     kpg.initialize(2048);
-    KeyPair pair = kpg.generateKeyPair();
+    var pair = kpg.generateKeyPair();
 
-    PrivateKey privateKey = pair.getPrivate();
-    PublicKey publicKey = pair.getPublic();
-    PKCS8EncodedKeySpec encoded = new PKCS8EncodedKeySpec(publicKey.getEncoded());
-    byte[] privateKeyString = makeWritable(privateKey);
-    byte[] publicKeyString = makeWritable(encoded.getEncoded());
+    var privateKey = pair.getPrivate();
+    var publicKey = pair.getPublic();
+    var encoded = new PKCS8EncodedKeySpec(publicKey.getEncoded());
+    var privateKeyString = makeWritable(privateKey);
+    var publicKeyString = makeWritable(encoded.getEncoded());
     System.out.println("private key---");
     System.out.write(privateKeyString, 0, privateKeyString.length);
     System.out.println("\n---");
@@ -44,7 +44,7 @@ class KeyGeneratorTest {
   }
 
   private void generateKeyStore(PublicKey key) throws Exception {
-    KeyStore keyStore = KeyStore.getInstance("JCEKS");
+    var keyStore = KeyStore.getInstance("JCEKS");
     keyStore.load(null, null);
 
     keyStore.setKeyEntry("secret", key, "password".toCharArray(), null);

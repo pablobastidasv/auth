@@ -10,7 +10,7 @@ public class AppConfig {
 
   @Produces
   public Logger loggerProducer(InjectionPoint ip) {
-    String clazz = ip.getMember().getDeclaringClass().getName();
+    var clazz = ip.getMember().getDeclaringClass().getName();
     return LoggerFactory.getLogger(clazz);
   }
 

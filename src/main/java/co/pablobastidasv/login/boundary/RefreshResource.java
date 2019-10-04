@@ -32,9 +32,8 @@ public class RefreshResource {
 
   @Inject TokenGenerator tokenGenerator;
 
-  @Inject
   @ConfigProperty(name = JWT_EXPIRES_IN, defaultValue = JWT_EXPIRES_IN_DEFAULT)
-  Integer expiresIn;
+  @Inject Integer expiresIn;
 
   /**
    * Method to expose <code>/refresh</code> endpoint to create a new token based on the actual one.
@@ -49,10 +48,10 @@ public class RefreshResource {
       return Response.status(401).build();
     }
 
-    Map<String, Object> claims = jwtUtils.mapFromClaims(jsonWebToken);
+    var claims = jwtUtils.mapFromClaims(jsonWebToken);
 
-    SignedJWT jwt = tokenGenerator.generateSignedToken(claims);
-    LoginContent content = new LoginContent(jwt, expiresIn);
+    var jwt = tokenGenerator.generateSignedToken(claims);
+    var content = new LoginContent(jwt, expiresIn);
 
     return Response.ok(content).build();
   }

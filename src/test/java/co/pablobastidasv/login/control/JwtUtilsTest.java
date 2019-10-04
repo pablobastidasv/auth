@@ -64,7 +64,7 @@ class JwtUtilsTest {
   @Test
   void fillClaimsFromMap() {
     // Given
-    Map<String, Object> claims = getMapClaims();
+    var claims = getMapClaims();
 
     // When
     JWTClaimsSet.Builder builder = jwtUtils.generateClaims(claims);
@@ -80,21 +80,21 @@ class JwtUtilsTest {
     // Given
     roles.add(new Role("ADMIN", "Administrator"));
 
-    User user = new User();
+    var user = new User();
     user.setId(expectedId);
     user.setUsername(expectedUsername);
     user.setRoles(roles);
 
     // When
-    JWTClaimsSet.Builder builder = jwtUtils.generateClaims(user);
-    JWTClaimsSet claimsSet = builder.build();
+    var builder = jwtUtils.generateClaims(user);
+    var claimsSet = builder.build();
 
     // Then
     testStringClaim(claimsSet, expectedUsername, Claims.sub.name());
     testStringClaim(claimsSet, expectedUsername, Claims.upn.name());
     testLongClaim(claimsSet, expectedId, JwtUtils.USER_ID_CLAIM);
 
-    Set<String> groupsFromClaim = (Set<String>) claimsSet.getClaim(Claims.groups.name());
+    var groupsFromClaim = (Set<String>) claimsSet.getClaim(Claims.groups.name());
     assertNotNull(groupsFromClaim);
     assertEquals(roles.size(), groupsFromClaim.size());
   }
@@ -103,16 +103,16 @@ class JwtUtilsTest {
   void mandatoryClaims() throws Exception {
     // Given
     when(clock.millis()).thenReturn(currentTime);
-    Long expectedCurrentTime = currentTime / 1000;
-    Long expectedExpTime = expectedCurrentTime + expiresIn;
+    var expectedCurrentTime = currentTime / 1000;
+    var expectedExpTime = expectedCurrentTime + expiresIn;
 
-    JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
-    Instant actualExp = Instant.now().minus(1, MINUTES);
+    var builder = new JWTClaimsSet.Builder();
+    var actualExp = Instant.now().minus(1, MINUTES);
     builder.expirationTime(Date.from(actualExp));
 
     // When
     jwtUtils.mandatoryClaims(builder);
-    JWTClaimsSet claimsSet = builder.build();
+    var claimsSet = builder.build();
 
     // Then
     assertNotEquals(actualExp, claimsSet.getExpirationTime());
@@ -130,7 +130,7 @@ class JwtUtilsTest {
 
   @Test
   void fillJwsHeader() {
-    JWSHeader header = jwtUtils.fillJwsHeader();
+    var header = jwtUtils.fillJwsHeader();
 
     assertEquals(JWSAlgorithm.RS256, header.getAlgorithm());
     assertEquals(jwtUtils.keyId, header.getKeyID());
@@ -139,23 +139,23 @@ class JwtUtilsTest {
 
   @Test
   void testMapFromClaims() {
-    Map<String, Object> claims = getMapClaims();
+    var claims = getMapClaims();
 
-    JsonWebToken jwt = mock(JsonWebToken.class);
+    var jwt = mock(JsonWebToken.class);
     when(jwt.getClaimNames()).thenReturn(claims.keySet());
     for (String key : claims.keySet()) {
       when(jwt.getClaim(key)).thenReturn(claims.get(key));
     }
 
-    Map<String, Object> claimsFromJwt = jwtUtils.mapFromClaims(jwt);
+    var claimsFromJwt = jwtUtils.mapFromClaims(jwt);
 
     assertEquals(claims.size(), claimsFromJwt.size());
 
-    for (String key : claimsFromJwt.keySet()) {
-      Object objectValue = claims.get(key);
+    for (var key : claimsFromJwt.keySet()) {
+      var objectValue = claims.get(key);
 
       if (objectValue instanceof JsonValue) {
-        Object valueFromJsonValue = getValueFromJsonValue((JsonValue) objectValue);
+        var valueFromJsonValue = getValueFromJsonValue((JsonValue) objectValue);
 
         assertEquals(valueFromJsonValue, claimsFromJwt.get(key));
       } else {
@@ -182,7 +182,7 @@ class JwtUtilsTest {
   }
 
   private Map<String, Object> getMapClaims() {
-    Map<String, Object> claims = new HashMap<>();
+    var claims = new HashMap<String, Object>();
     claims.put("sub", "username");
     claims.put("email", "username@test.com");
     claims.put("ageOfBirth", new Date());
@@ -196,7 +196,7 @@ class JwtUtilsTest {
 
   private void testLongClaim(JWTClaimsSet claimsSet, Long expected, String claimName)
       throws ParseException {
-    Long claimValue = claimsSet.getLongClaim(claimName);
+    var claimValue = claimsSet.getLongClaim(claimName);
 
     assertNotNull(claimValue);
     assertEquals(expected, claimValue);
@@ -204,7 +204,7 @@ class JwtUtilsTest {
 
   private void testStringClaim(JWTClaimsSet claimsSet, String expected, String claimName)
       throws ParseException {
-    String claimValue = claimsSet.getStringClaim(claimName);
+    var claimValue = claimsSet.getStringClaim(claimName);
 
     assertNotNull(claimValue);
     assertEquals(expected, claimValue);

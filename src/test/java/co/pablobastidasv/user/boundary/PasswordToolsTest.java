@@ -9,10 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
-import co.pablobastidasv.user.boundary.PasswordTools;
-import java.time.Instant;
-import java.time.LocalTime;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,8 +32,8 @@ class PasswordToolsTest {
 
   @Test
   void generateSalt() {
-    String salt1 = passwordTools.generateSalt();
-    String salt2 = passwordTools.generateSalt();
+    var salt1 = passwordTools.generateSalt();
+    var salt2 = passwordTools.generateSalt();
 
     assertNotNull(salt1);
     assertNotNull(salt2);
@@ -56,11 +52,11 @@ class PasswordToolsTest {
 
   @Test
   void hashPassword() {
-    String salt = passwordTools.generateSalt();
+    var salt = passwordTools.generateSalt();
     assertNotNull(salt);
 
-    String optionalHashedPassword = passwordTools.hashPassword(password, salt);
-    String optionalHashedPassword2 = passwordTools.hashPassword(password, salt);
+    var optionalHashedPassword = passwordTools.hashPassword(password, salt);
+    var optionalHashedPassword2 = passwordTools.hashPassword(password, salt);
 
     assertNotNull(optionalHashedPassword);
     assertNotNull(optionalHashedPassword2);
@@ -70,10 +66,10 @@ class PasswordToolsTest {
 
   @Test
   void verifyGeneratedPassword() {
-    String salt = passwordTools.generateSalt();
+    var salt = passwordTools.generateSalt();
     assertNotNull(salt);
 
-    String hashedPassword = passwordTools.hashPassword(password, salt);
+    var hashedPassword = passwordTools.hashPassword(password, salt);
     assertNotNull(hashedPassword);
 
     assertTrue(passwordTools.isValid(password, hashedPassword, salt));

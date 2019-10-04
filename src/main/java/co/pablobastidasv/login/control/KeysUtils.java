@@ -25,17 +25,14 @@ import org.jose4j.keys.RsaKeyUtil;
 @Dependent
 public class KeysUtils {
 
-  @Inject
   @ConfigProperty(name = JWT_PRIVATE_KEY)
-  String privateKey;
+  @Inject String privateKey;
 
-  @Inject
   @ConfigProperty(name = MP_JWT_PUBLIC_KEY)
-  String publicKey;
+  @Inject String publicKey;
 
-  @Inject
   @ConfigProperty(name = JWT_KEY_ID)
-  String keyId;
+  @Inject String keyId;
 
   /**
    * Reading the private key String provided in property {@code co.pablobastidasv.auth.private-key}
@@ -46,8 +43,8 @@ public class KeysUtils {
    * @throws InvalidKeySpecException When provided key is wrong.
    */
   public PrivateKey readPrivateKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
-    byte[] decodedKey = Base64.getDecoder().decode(privateKey);
-    PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decodedKey);
+    var decodedKey = Base64.getDecoder().decode(privateKey);
+    var keySpec = new PKCS8EncodedKeySpec(decodedKey);
 
     return KeyFactory.getInstance(RsaKeyUtil.RSA).generatePrivate(keySpec);
   }
@@ -61,8 +58,8 @@ public class KeysUtils {
    * @throws InvalidKeySpecException When provided key is wrong.
    */
   PublicKey readPublicKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
-    byte[] decodedKey = Base64.getDecoder().decode(publicKey);
-    EncodedKeySpec keySpec = new X509EncodedKeySpec(decodedKey);
+    var decodedKey = Base64.getDecoder().decode(publicKey);
+    var keySpec = new X509EncodedKeySpec(decodedKey);
 
     return KeyFactory.getInstance(RsaKeyUtil.RSA).generatePublic(keySpec);
   }
