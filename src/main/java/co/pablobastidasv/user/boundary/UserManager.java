@@ -1,23 +1,28 @@
 package co.pablobastidasv.user.boundary;
 
-import static co.pablobastidasv.user.entity.User.FIND_BY_USERNAME_AND_TENANT;
-import static co.pablobastidasv.user.entity.User.TENANT_FIELD;
-import static co.pablobastidasv.user.entity.User.USERNAME_FIELD;
-
 import co.pablobastidasv.user.entity.User;
 import co.pablobastidasv.user.entity.UserEvent;
-import java.util.Optional;
+import io.smallrye.reactive.messaging.annotations.Emitter;
+import io.smallrye.reactive.messaging.annotations.Stream;
+import org.slf4j.Logger;
+
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
+import java.util.Optional;
+
+import static co.pablobastidasv.user.entity.User.*;
 
 @ApplicationScoped
 public class UserManager {
 
   @Inject EntityManager em;
   @Inject PasswordTools passwordTools;
+  @Inject Logger logger;
+  @Inject @Stream("login_created") Emitter<User> loginCreatedEmitter;
 
   /**
    * Query in DB to find a {@link User} based on their {@code username} and {@code tenantId}.
@@ -44,10 +49,10 @@ public class UserManager {
    * Create the user registry in the database and return the assigned password in raw format.
    *
    * @param userEvent The event received with basic user information.
-   * @return The assigned password in Raw format
    */
   @Transactional
-  public User createUser(UserEvent userEvent) {
+  public void createUser(@ObservesAsync UserEvent userEvent) {
+    logger.trace("Creating user...");
     var user = new User(passwordTools)
             .setUsername(userEvent.emails.get(0).email)
             .setUserId(userEvent.userId)
@@ -55,7 +60,10 @@ public class UserManager {
 
     em.persist(user);
     em.detach(user);
+    logger.trace("User Created.");
 
-    return user;
+    logger.trace("Sending event...");
+    loginCreatedEmitter.send(user);
+    logger.trace("Event Sent.");
   }
 }

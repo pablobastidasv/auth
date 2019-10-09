@@ -1,20 +1,21 @@
 package co.pablobastidasv.user.boundary;
 
-import co.pablobastidasv.user.entity.User;
 import co.pablobastidasv.user.entity.UserEvent;
 import io.smallrye.reactive.messaging.kafka.KafkaMessage;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.slf4j.Logger;
+
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.json.bind.JsonbBuilder;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.eclipse.microprofile.reactive.messaging.Outgoing;
-import org.slf4j.Logger;
+import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
 public class UserStreamListener {
 
   @Inject Logger log;
-  @Inject UserManager userManager;
+  @Inject Event<UserEvent> bus;
 
   /**
    * Method triggered when a user created event arrives to the Kafka.
@@ -26,15 +27,14 @@ public class UserStreamListener {
    * @return The user created to be published in the kafka topic
    */
   @Incoming("user_created")
-  @Outgoing("login_created")
-  public KafkaMessage<String, User> onUserCreated(KafkaMessage<String, String> message) {
+  public CompletionStage<Void> onUserCreated(KafkaMessage<String, String> message) {
     log.debug("Message received = {}", message);
     var userEvent = JsonbBuilder.create().fromJson(message.getPayload(), UserEvent.class);
     userEvent.userId = message.getKey();
     log.debug("Event received = {}", userEvent);
 
-    var user = userManager.createUser(userEvent);
+    bus.fireAsync(userEvent);
 
-    return KafkaMessage.of(message.getKey(), user);
+    return message.ack();
   }
 }
