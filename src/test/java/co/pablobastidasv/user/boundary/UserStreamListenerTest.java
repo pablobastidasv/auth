@@ -1,9 +1,5 @@
 package co.pablobastidasv.user.boundary;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-
 import co.pablobastidasv.KafkaMessageStub;
 import co.pablobastidasv.user.entity.UserEvent;
 import org.junit.jupiter.api.Test;
@@ -14,19 +10,30 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 
+import javax.enterprise.event.Event;
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.verify;
+
 @ExtendWith(MockitoExtension.class)
 class UserStreamListenerTest {
 
   @Mock Logger log;
-  @Mock UserManager userManager;
+  @Mock Event<UserEvent> bus;
 
   @InjectMocks UserStreamListener userStreamListener;
 
   @Test
   void onUserCreated(){
     // Given, a kafka event
-    var userCreatedEvent = "{"
-        + "\"emails\": [{\"type\":\"MAIN\",\"email\":\"pablob@gmail.com\"}]}";
+    var userCreatedEvent = new UserEvent();
+    UserEvent.Email email = new UserEvent.Email();
+    email.email = "pablob@gmail.com";
+    email.type = "MAIN";
+    userCreatedEvent.emails = Collections.singletonList(email);
+
     var userId = "123";
     var userMessage = new KafkaMessageStub<>(userId, userCreatedEvent);
 
@@ -35,10 +42,10 @@ class UserStreamListenerTest {
 
     // Then, message key must be the userId in user object
     var argument = ArgumentCaptor.forClass(UserEvent.class);
-    verify(userManager).createUser(argument.capture());
+    verify(bus).fireAsync(argument.capture());
 
-    verify(userManager).createUser(any(UserEvent.class));
-    verify(log).debug(anyString(), any(UserEvent.class));
+    assertEquals(userId, argument.getValue().userId);
+    assertNotNull(argument.getValue().emails);
   }
 
 }

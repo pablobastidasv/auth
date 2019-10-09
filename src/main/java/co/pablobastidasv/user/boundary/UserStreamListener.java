@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.json.bind.JsonbBuilder;
 import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
@@ -27,9 +26,9 @@ public class UserStreamListener {
    * @return The user created to be published in the kafka topic
    */
   @Incoming("user_created")
-  public CompletionStage<Void> onUserCreated(KafkaMessage<String, String> message) {
+  public CompletionStage<Void> onUserCreated(KafkaMessage<String, UserEvent> message) {
     log.debug("Message received = {}", message);
-    var userEvent = JsonbBuilder.create().fromJson(message.getPayload(), UserEvent.class);
+    var userEvent = message.getPayload();
     userEvent.userId = message.getKey();
     log.debug("Event received = {}", userEvent);
 
