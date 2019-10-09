@@ -1,13 +1,11 @@
 package co.pablobastidasv.user.boundary;
 
-import co.pablobastidasv.user.entity.User;
 import co.pablobastidasv.user.entity.UserEvent;
 import io.smallrye.reactive.messaging.kafka.KafkaMessage;
+import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.json.bind.JsonbBuilder;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.slf4j.Logger;
 
 @ApplicationScoped
@@ -19,22 +17,21 @@ public class UserStreamListener {
   /**
    * Method triggered when a user created event arrives to the Kafka.
    *
-   * <p>This method will create the user login and trigger a new event indicating
-   * that the login user has been created.</p>
+   * <p>This method will create the user login and trigger a new event indicating that the login
+   * user has been created.
    *
    * @param message User event from the kafka topic
    * @return The user created to be published in the kafka topic
    */
   @Incoming("user_created")
-  @Outgoing("login_created")
-  public KafkaMessage<String, User> onUserCreated(KafkaMessage<String, String> message) {
+  public CompletionStage<Void> onUserCreated(KafkaMessage<String, UserEvent> message) {
     log.debug("Message received = {}", message);
-    var userEvent = JsonbBuilder.create().fromJson(message.getPayload(), UserEvent.class);
+    var userEvent = message.getPayload();
     userEvent.userId = message.getKey();
     log.debug("Event received = {}", userEvent);
 
-    var user = userManager.createUser(userEvent);
+    //    var user = userManager.createUser(userEvent);
 
-    return KafkaMessage.of(message.getKey(), user);
+    return message.ack();
   }
 }
