@@ -3,15 +3,12 @@ package co.pablobastidasv.login.boundary;
 import co.pablobastidasv.login.control.JwtException;
 import co.pablobastidasv.login.control.JwtUtils;
 import co.pablobastidasv.login.control.KeysUtils;
-import co.pablobastidasv.user.entity.User;
+import co.pablobastidasv.user.entity.SystemUser;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
@@ -41,12 +38,12 @@ public class TokenGenerator {
   /**
    * Utility method to generate a SignedJWT from a User and tenant.
    *
-   * @param user - JWT claims will be based on the information from the user.
+   * @param systemUser - JWT claims will be based on the information from the user.
    * @param tenant - Tenant ID where the user belongs.
    * @return the JWT Signed.
    */
-  public SignedJWT generateSignedToken(User user, String tenant) {
-    var claimsBuilder = jwtUtils.generateClaims(user);
+  public SignedJWT generateSignedToken(SystemUser systemUser, String tenant) {
+    var claimsBuilder = jwtUtils.generateClaims(systemUser);
     jwtUtils.mandatoryClaims(claimsBuilder);
     claimsBuilder.claim("tenant", tenant);
 

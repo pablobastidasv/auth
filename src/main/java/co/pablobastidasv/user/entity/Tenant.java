@@ -16,7 +16,7 @@ public class Tenant {
   private String name;
 
   @ManyToMany(mappedBy = "tenants")
-  private List<User> user;
+  private List<SystemUser> systemUsers;
 
   public String getId() {
     return id;
@@ -34,11 +34,11 @@ public class Tenant {
     this.name = name;
   }
 
-  public List<User> getUser() {
-    return user;
+  public List<SystemUser> getSystemUser() {
+    return systemUsers;
   }
 
-  public void setUser(List<User> user) {
-    this.user = user;
+  public void setSystemUser(List<SystemUser> systemUsers) {
+    this.systemUsers = systemUsers;
   }
 }

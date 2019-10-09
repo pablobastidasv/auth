@@ -11,10 +11,9 @@ import static org.mockito.Mockito.when;
 import static org.wildfly.common.Assert.assertNotNull;
 
 import co.pablobastidasv.user.entity.Role;
-import co.pablobastidasv.user.entity.User;
+import co.pablobastidasv.user.entity.SystemUser;
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.JWTClaimsSet;
 import java.text.ParseException;
 import java.time.Clock;
@@ -80,7 +79,7 @@ class JwtUtilsTest {
     // Given
     roles.add(new Role("ADMIN", "Administrator"));
 
-    var user = new User();
+    var user = new SystemUser();
     user.setId(expectedId);
     user.setUsername(expectedUsername);
     user.setRoles(roles);

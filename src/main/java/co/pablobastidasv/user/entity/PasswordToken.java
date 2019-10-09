@@ -31,7 +31,7 @@ public class PasswordToken {
 
   @ManyToOne
   @JoinColumn(name = "user_id")
-  private User userId;
+  private SystemUser systemUserId;
 
   public PasswordToken() {
   }
@@ -48,8 +48,8 @@ public class PasswordToken {
     return expirationTime;
   }
 
-  public User getUserId() {
-    return userId;
+  public SystemUser getSystemUserId() {
+    return systemUserId;
   }
 
   public static class Builder {
@@ -76,13 +76,13 @@ public class PasswordToken {
       return this;
     }
 
-    public Builder setUserId(User userId) {
-      this.passwordToken.userId = userId;
+    public Builder setUserId(SystemUser systemUserId) {
+      this.passwordToken.systemUserId = systemUserId;
       return this;
     }
 
     public PasswordToken build() {
-      Objects.requireNonNull(this.passwordToken.userId);
+      Objects.requireNonNull(this.passwordToken.systemUserId);
       return this.passwordToken;
     }
   }

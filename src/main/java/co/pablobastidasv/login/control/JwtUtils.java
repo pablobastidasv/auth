@@ -6,7 +6,7 @@ import static co.pablobastidasv.ConfigurationConstants.JWT_EXPIRES_IN_DEFAULT;
 import static co.pablobastidasv.ConfigurationConstants.JWT_KEY_ID;
 
 import co.pablobastidasv.user.entity.Role;
-import co.pablobastidasv.user.entity.User;
+import co.pablobastidasv.user.entity.SystemUser;
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -73,16 +73,16 @@ public class JwtUtils {
    *   <li><strong>user_id</strong>: with the <i>userId</i> information</li>
    * </ul>
    *
-   * @param user The user from the database.
+   * @param systemUser The user from the database.
    * @return A {@link JWTClaimsSet.Builder} with the user information.
    */
-  public JWTClaimsSet.Builder generateClaims(User user) {
-    Set<String> group = user.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
+  public JWTClaimsSet.Builder generateClaims(SystemUser systemUser) {
+    Set<String> group = systemUser.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
 
     return new JWTClaimsSet.Builder()
-        .claim(USER_ID_CLAIM, user.getId())
-        .claim(Claims.upn.name(), user.getUsername())
-        .claim(Claims.sub.name(), user.getUsername())
+        .claim(USER_ID_CLAIM, systemUser.getId())
+        .claim(Claims.upn.name(), systemUser.getUsername())
+        .claim(Claims.sub.name(), systemUser.getUsername())
         .claim(Claims.groups.name(), group);
   }
 

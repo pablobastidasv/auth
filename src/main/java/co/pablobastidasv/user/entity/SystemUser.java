@@ -1,8 +1,8 @@
 package co.pablobastidasv.user.entity;
 
-import static co.pablobastidasv.user.entity.User.FIND_BY_USERNAME_AND_TENANT;
-import static co.pablobastidasv.user.entity.User.TENANT_FIELD;
-import static co.pablobastidasv.user.entity.User.USERNAME_FIELD;
+import static co.pablobastidasv.user.entity.SystemUser.FIND_BY_USERNAME_AND_TENANT;
+import static co.pablobastidasv.user.entity.SystemUser.TENANT_FIELD;
+import static co.pablobastidasv.user.entity.SystemUser.USERNAME_FIELD;
 
 import co.pablobastidasv.user.boundary.PasswordTools;
 import java.util.List;
@@ -33,16 +33,16 @@ import javax.validation.constraints.Size;
     @NamedQuery(
       name = FIND_BY_USERNAME_AND_TENANT,
       query =
-          "SELECT u FROM User u JOIN u.tenants t LEFT JOIN u.roles g"
+          "SELECT u FROM SystemUser u JOIN u.tenants t LEFT JOIN u.roles g"
               + " WHERE u.username = :"
               + USERNAME_FIELD
               + " AND t.id = :"
               + TENANT_FIELD)
 })
 @Table(name = "users")
-public class User {
+public class SystemUser {
 
-  public static final String FIND_BY_USERNAME_AND_TENANT = "User.findByUsernameAndTenant";
+  public static final String FIND_BY_USERNAME_AND_TENANT = "SystemUser.findByUsernameAndTenant";
 
   public static final String TENANT_FIELD = "tenantId";
   public static final String USERNAME_FIELD = "username";
@@ -96,16 +96,16 @@ public class User {
               name = "unq_user_role",
               columnNames = {"user_id", "role_id"}))
   private List<Role> roles;
-  @OneToMany(mappedBy = "userId")
+  @OneToMany(mappedBy = "systemUserId")
   private List<PasswordToken> tokens;
 
   @Transient
   private PasswordTools passwordTools;
 
-  public User() {
+  public SystemUser() {
   }
 
-  public User(PasswordTools passwordTools) {
+  public SystemUser(PasswordTools passwordTools) {
     this.passwordTools = passwordTools;
   }
 
@@ -117,7 +117,7 @@ public class User {
    *
    * @return this user.
    */
-  public User resetPassword() {
+  public SystemUser resetPassword() {
     var password = this.passwordTools.generateRandomPassword();
     return resetPassword(password);
   }
@@ -128,7 +128,7 @@ public class User {
    * @param password Password to assign to the actual User.
    * @return this user.
    */
-  public User resetPassword(String password) {
+  public SystemUser resetPassword(String password) {
     this.salt = passwordTools.generateSalt();
     this.key = passwordTools.hashPassword(password, salt);
 
@@ -151,7 +151,7 @@ public class User {
     return userId;
   }
 
-  public User setUserId(String userId) {
+  public SystemUser setUserId(String userId) {
     this.userId = userId;
     return this;
   }
@@ -160,7 +160,7 @@ public class User {
     return username;
   }
 
-  public User setUsername(String username) {
+  public SystemUser setUsername(String username) {
     this.username = username;
     return this;
   }
@@ -169,7 +169,7 @@ public class User {
     return key;
   }
 
-  public User setKey(String key) {
+  public SystemUser setKey(String key) {
     this.key = key;
     return this;
   }
@@ -178,7 +178,7 @@ public class User {
     return salt;
   }
 
-  public User setSalt(String salt) {
+  public SystemUser setSalt(String salt) {
     this.salt = salt;
     return this;
   }

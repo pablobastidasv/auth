@@ -13,7 +13,7 @@ import co.pablobastidasv.user.boundary.PasswordTools;
 import co.pablobastidasv.login.entity.LoginContent;
 import co.pablobastidasv.user.boundary.UserManager;
 import co.pablobastidasv.user.entity.State;
-import co.pablobastidasv.user.entity.User;
+import co.pablobastidasv.user.entity.SystemUser;
 import com.nimbusds.jwt.SignedJWT;
 import java.util.Optional;
 import javax.ws.rs.core.Response;
@@ -52,10 +52,10 @@ class LoginResourceTest {
 
   @Test
   void login_changePassword() {
-    User user = new User();
-    user.setState(State.CHANGE_PWD);
+    SystemUser systemUser = new SystemUser();
+    systemUser.setState(State.CHANGE_PWD);
 
-    when(userManager.findByUserAndTenant(username, tenant)).thenReturn(Optional.of(user));
+    when(userManager.findByUserAndTenant(username, tenant)).thenReturn(Optional.of(systemUser));
     resource.tenantId = tenant;
 
     Response login = resource.login(username, "password");
@@ -69,10 +69,10 @@ class LoginResourceTest {
 
   @Test
   void login_changeJustCreated() {
-    User user = new User();
-    user.setState(State.CREATED);
+    SystemUser systemUser = new SystemUser();
+    systemUser.setState(State.CREATED);
 
-    when(userManager.findByUserAndTenant(username, tenant)).thenReturn(Optional.of(user));
+    when(userManager.findByUserAndTenant(username, tenant)).thenReturn(Optional.of(systemUser));
     resource.tenantId = tenant;
 
     Response login = resource.login(username, "password");
@@ -86,12 +86,12 @@ class LoginResourceTest {
 
   @Test
   void login_userActive() {
-    User user = new User();
-    user.setState(State.ACTIVE);
+    SystemUser systemUser = new SystemUser();
+    systemUser.setState(State.ACTIVE);
 
     when(tokenGenerator.generateSignedToken(any(), anyString())).thenReturn(mock(SignedJWT.class));
     when(passwordTools.isValid(anyString(), any(), any())).thenReturn(true);
-    when(userManager.findByUserAndTenant(username, tenant)).thenReturn(Optional.of(user));
+    when(userManager.findByUserAndTenant(username, tenant)).thenReturn(Optional.of(systemUser));
     resource.tenantId = tenant;
 
     Response login = resource.login(username, "password");

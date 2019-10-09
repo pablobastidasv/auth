@@ -6,9 +6,8 @@ import static co.pablobastidasv.ConfigurationConstants.JWT_EXPIRES_IN_DEFAULT;
 import co.pablobastidasv.login.entity.LoginContent;
 import co.pablobastidasv.user.boundary.PasswordTools;
 import co.pablobastidasv.user.boundary.UserManager;
-import co.pablobastidasv.user.entity.User;
-import com.nimbusds.jwt.SignedJWT;
-import java.util.Optional;
+import co.pablobastidasv.user.entity.SystemUser;
+
 import javax.annotation.security.PermitAll;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -70,8 +69,8 @@ public class LoginResource {
     }
   }
 
-  private Response defineResponse(User user, String password) {
-    switch (user.getState()) {
+  private Response defineResponse(SystemUser systemUser, String password) {
+    switch (systemUser.getState()) {
       case BLOCKED:
         return Response.status(Response.Status.UNAUTHORIZED).build();
       case CREATED:
@@ -80,19 +79,19 @@ public class LoginResource {
       default:
     }
 
-    if (isPasswordValid(user, password)) {
-      return buildOkResponse(user);
+    if (isPasswordValid(systemUser, password)) {
+      return buildOkResponse(systemUser);
     } else {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
   }
 
-  private boolean isPasswordValid(User user, String password) {
-    return passwordTools.isValid(password, user.getKey(), user.getSalt());
+  private boolean isPasswordValid(SystemUser systemUser, String password) {
+    return passwordTools.isValid(password, systemUser.getKey(), systemUser.getSalt());
   }
 
-  private Response buildOkResponse(User user) {
-    var jwt = tokenGenerator.generateSignedToken(user, tenantId);
+  private Response buildOkResponse(SystemUser systemUser) {
+    var jwt = tokenGenerator.generateSignedToken(systemUser, tenantId);
     var content = new LoginContent(jwt, expiresIn);
     return Response.ok(content).build();
   }

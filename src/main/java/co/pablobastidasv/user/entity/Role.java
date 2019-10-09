@@ -16,7 +16,7 @@ public class Role {
   private String name;
 
   @ManyToMany(mappedBy = "roles")
-  private List<User> user;
+  private List<SystemUser> systemUsers;
 
   public Role() {
 
@@ -43,11 +43,11 @@ public class Role {
     this.name = name;
   }
 
-  public List<User> getUser() {
-    return user;
+  public List<SystemUser> getSystemUsers() {
+    return systemUsers;
   }
 
-  public void setUser(List<User> user) {
-    this.user = user;
+  public void setSystemUsers(List<SystemUser> systemUsers) {
+    this.systemUsers = systemUsers;
   }
 }
