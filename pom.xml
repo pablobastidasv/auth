@@ -12,7 +12,7 @@
     <surefire-plugin.version>2.22.0</surefire-plugin.version>
 
     <quarkus.version>0.23.2</quarkus.version>
-    <nimbus-jose.version>7.3</nimbus-jose.version>
+    <nimbus-jose.version>7.9</nimbus-jose.version>
     <mockito.version>3.0.0</mockito.version>
 
     <sonar.host.url>http://localhost:9000</sonar.host.url>
