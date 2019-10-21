@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import co.pablobastidasv.user.entity.SystemUser;
 import co.pablobastidasv.user.entity.UserEvent;
 import co.pablobastidasv.user.entity.UserEvent.Email;
+import io.smallrye.reactive.messaging.kafka.KafkaMessage;
 import java.util.Arrays;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -34,7 +35,7 @@ class UserManagerTest {
   @Mock PasswordTools passwordTools;
   @Mock TypedQuery<SystemUser> query;
   @Mock Logger logger;
-  @Mock Emitter<SystemUser> loginCreatedEmitter;
+  @Mock Emitter<KafkaMessage<String, SystemUser>> loginCreatedEmitter;
 
   @InjectMocks private UserManager userManager;
 
@@ -78,6 +79,7 @@ class UserManagerTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void createUserFromUserEvent(){
     // Given a user event
     var event = new UserEvent();
@@ -87,14 +89,17 @@ class UserManagerTest {
     when(passwordTools.generateRandomPassword()).thenReturn(password);
 
     ArgumentCaptor<SystemUser> systemUserCaptor = ArgumentCaptor.forClass(SystemUser.class);
+    var msg = ArgumentCaptor.forClass(KafkaMessage.class);
 
     // When a user is created
     userManager.createUser(event);
 
     // Then, persisted user must be returned
     verify(em).persist(systemUserCaptor.capture());
-    verify(loginCreatedEmitter).send(systemUserCaptor.capture());
+    verify(loginCreatedEmitter).send(msg.capture());
     assertEquals(userId, systemUserCaptor.getValue().getUserId());
     assertEquals(mainEmail.email, systemUserCaptor.getValue().getUsername());
+    assertEquals(userId, msg.getValue().getKey());
+    assertEquals(systemUserCaptor.getValue(), msg.getValue().getPayload());
   }
 }
