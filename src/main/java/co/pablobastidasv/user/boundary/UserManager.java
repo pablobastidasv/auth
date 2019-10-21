@@ -1,20 +1,22 @@
 package co.pablobastidasv.user.boundary;
 
+import static co.pablobastidasv.user.entity.SystemUser.FIND_BY_USERNAME_AND_TENANT;
+import static co.pablobastidasv.user.entity.SystemUser.TENANT_FIELD;
+import static co.pablobastidasv.user.entity.SystemUser.USERNAME_FIELD;
+
 import co.pablobastidasv.user.entity.SystemUser;
 import co.pablobastidasv.user.entity.UserEvent;
+import io.smallrye.reactive.messaging.annotations.Channel;
 import io.smallrye.reactive.messaging.annotations.Emitter;
-import io.smallrye.reactive.messaging.annotations.Stream;
-import org.slf4j.Logger;
-
+import io.smallrye.reactive.messaging.kafka.KafkaMessage;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
-import java.util.Optional;
-
-import static co.pablobastidasv.user.entity.SystemUser.*;
+import org.slf4j.Logger;
 
 @ApplicationScoped
 public class UserManager {
@@ -22,7 +24,7 @@ public class UserManager {
   @Inject EntityManager em;
   @Inject PasswordTools passwordTools;
   @Inject Logger logger;
-  @Inject @Stream("login_created") Emitter<SystemUser> loginCreatedEmitter;
+  @Inject @Channel("login_created") Emitter<KafkaMessage<String, SystemUser>> loginCreatedEmitter;
 
   /**
    * Query in DB to find a {@link SystemUser} based on their {@code username} and {@code tenantId}.
@@ -59,11 +61,12 @@ public class UserManager {
             .resetPassword();
 
     em.persist(user);
-    em.detach(user);
+    em.flush();
     logger.trace("User Created.");
 
     logger.trace("Sending event...");
-    loginCreatedEmitter.send(user);
+    var message = KafkaMessage.of(userEvent.userId, user);
+    loginCreatedEmitter.send(message);
     logger.trace("Event Sent.");
   }
 }
